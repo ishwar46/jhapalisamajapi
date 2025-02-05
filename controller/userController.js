@@ -129,6 +129,11 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials.' });
     }
+    if (user.accountExpiry && user.accountExpiry < new Date()) {
+      return res.status(403).json({
+        error: 'Your membership has expired. Please renew or contact admin.',
+      });
+    }
 
     // Check if account is locked or inactive
     if (
@@ -144,7 +149,6 @@ exports.login = async (req, res) => {
         .status(403)
         .json({ error: 'Account is locked due to too many failed logins. Please Contact Admin.' });
     }
-
 
     // Compare provided password with stored hashed password
     const passwordMatch = await bcrypt.compare(password, user.password);

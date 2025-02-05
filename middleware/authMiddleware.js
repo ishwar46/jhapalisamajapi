@@ -2,7 +2,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Use environment variable for JWT secret in production
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key';
 
 module.exports = async function authMiddleware(req, res, next) {
@@ -38,8 +37,6 @@ module.exports = async function authMiddleware(req, res, next) {
 
         // 5. Attach user or userId to req object
         req.userId = user._id;
-        // Optionally attach the entire user doc
-        // req.user = user;
 
         return next();
     } catch (error) {

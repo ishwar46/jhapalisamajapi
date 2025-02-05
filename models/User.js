@@ -44,10 +44,15 @@ const userSchema = new mongoose.Schema(
     ],
     accountStatus: {
       type: String,
-      enum: ['pending', 'active', 'suspended', 'deactivated'],
+      enum: ['pending', 'active', 'suspended', 'deactivated', 'rejected'],
       default: 'pending',
     },
 
+    // Account expiration date (null until set by admin)
+    accountExpiry: {
+      type: Date,
+      default: null,
+    },
     /**
      * Role
      * - 'user': normal user
