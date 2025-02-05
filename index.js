@@ -36,28 +36,8 @@ directories.forEach((dir) => {
     }
 })
 
-//Now Defining Route
-app.use("/public", express.static(path.join(__dirname, "public")))
-app.use("/public/uploads", express.static(path.join(__dirname, "public/uploads")))
-app.use("/public/uploads/portfolioimage", express.static(path.join(__dirname, "public/uploads/portfolioimage")))
-app.use("/public/uploads/trustedimage", express.static(path.join(__dirname, "public/uploads/trustedimage")))
-app.use("/public/uploads/staffimage", express.static(path.join(__dirname, "public/uploads/staffimage")))
-app.use("/public/uploads/technologyimage", express.static(path.join(__dirname, "public/uploads/technologyimage")))
-app.use("/public/uploads/lottieFile", express.static(path.join(__dirname, "public/uploads/lottieFile")))
-app.use("/uploads/resumes", express.static(path.join(__dirname, "public/uploads/resumes")));
-
-
-app.use("/api/user", require("./routes/userRoutes"))
-app.use("/api/service", require("./routes/serviceRoute"))
-app.use("/api/portfolio", require("./routes/portfolioRoute"))
-app.use("/api/technology", require("./routes/technologyRoute"))
-app.use("/api/trust", require("./routes/trustedRoute"))
-app.use("/api/staff", require("./routes/staffRoutes"))
-//Career Routes
-app.use("/api/careers", require("./routes/careerRoutes"))
-// Application Routes
-app.use("/api/applications", require("./routes/applicationRoute"))
-app.use("/api/auth", require("./routes/userRoutes"))
+app.use("/api/users", require("./routes/userRoutes"))
+app.use("/api/admin", require("./routes/adminRoutes"))
 
 
 app.get('/', (req, res) => {

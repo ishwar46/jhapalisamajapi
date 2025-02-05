@@ -1,7 +1,7 @@
 {
-    "name": "uranus_website_api",
+    "name": "jhapali_samaj_usa_api",
     "version": "1.0.0",
-    "description": "This is Uranus Website API",
+    "description": "Jhapali Samaj USA",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",

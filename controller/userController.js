@@ -1,202 +1,218 @@
-const User = require("../models/userModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const validator = require("validator");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-const register = async (req, res) => {
+
+const MAX_LOGIN_ATTEMPTS = 5;
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
+
+// Simple email validator
+const validateEmail = (email) => {
+  const regex = /^\S+@\S+\.\S+$/;
+  return regex.test(email);
+};
+
+/**
+ * Register a new user
+ * POST /api/register
+ */
+exports.register = async (req, res) => {
   try {
     const {
-      fullname,
+      fullName,
+      username,
       email,
-      userName,
-      password,
-      phoneNumber,
-      officeNumber,
-      organizationName,
-      designation,
-      role,
-      status,
-      profilePicture,
       address,
-      preferences,
+      contact,
+      profession,
+      password,
+      membershipType,
     } = req.body;
 
     // Validate required fields
-    if (
-      !fullname ||
-      !email ||
-      !userName ||
-      !password ||
-      !organizationName ||
-      !designation
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Please enter all required fields.",
-      });
+    const errors = {};
+    if (!fullName || fullName.trim() === '') {
+      errors.fullName = 'Full Name is required.';
+    }
+    if (!username || username.trim() === '') {
+      errors.username = 'Username is required.';
+    }
+    if (!email || email.trim() === '') {
+      errors.email = 'Email is required.';
+    } else if (!validateEmail(email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+    if (!address || address.trim() === '') {
+      errors.address = 'Address is required.';
+    }
+    if (!contact || contact.trim() === '') {
+      errors.contact = 'Contact is required.';
+    }
+    if (!profession || profession.trim() === '') {
+      errors.profession = 'Profession is required.';
+    }
+    if (!password) {
+      errors.password = 'Password is required.';
     }
 
-    // Validate email format
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email format.",
-      });
+    // If any errors, return 400 Bad Request with details
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
     }
 
-    // Check if user or username already exists
-    const existingUser = await User.findOne({ email });
+    // Check if username or email already exists
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }],
+    });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "A user with this email already exists.",
-      });
-    }
-
-    const existingUserName = await User.findOne({ userName });
-    if (existingUserName) {
-      return res.status(400).json({
-        success: false,
-        message: "Username already taken.",
-      });
+      return res
+        .status(400)
+        .json({ error: 'Username or Email already exists.' });
     }
 
     // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user object
-    const userData = new User({
-      fullname,
+    // Create the new user (membershipType defaults to 'general' if not provided)
+    const user = new User({
+      fullName,
+      username,
       email,
-      userName,
+      address,
+      contact,
+      profession,
       password: hashedPassword,
-      phoneNumber,
-      officeNumber,
-      organizationName,
-      designation,
-      role: role || "Customer",
-      status: status || "active",
-      profilePicture,
-      address: address || {},
-      preferences: preferences || { emailNotifications: true },
+      membershipType: membershipType || 'general',
     });
 
-    // Save user to database
-    await userData.save();
+    await user.save();
 
     return res.status(201).json({
-      success: true,
+      message: 'User registered successfully.',
       user: {
-        id: userData._id,
-        fullname: userData.fullname,
-        email: userData.email,
-        userName: userData.userName,
-        organizationName: userData.organizationName,
-        designation: userData.designation,
-        role: userData.role,
-        status: userData.status,
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        membershipType: user.membershipType,
+        accountStatus: user.accountStatus,
+        createdAt: user.createdAt,
       },
-      message: "Registration successful.",
     });
   } catch (error) {
-    console.error(`Error during registration: ${error.message}`);
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred during registration. Please try again later.",
-    });
+    console.error('Register Error:', error);
+    return res
+      .status(500)
+      .json({ error: 'Server error while registering user.' });
   }
 };
 
-const login = async (req, res) => {
-  const { userName, password } = req.body;
-
-  // Validate required fields
-  if (!userName || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Please enter both username and password.",
-    });
-  }
-
+/**
+ * User Login
+ * POST /api/login
+ */
+exports.login = async (req, res) => {
   try {
-    // Find user by username
-    const userData = await User.findOne({
-      $or: [{ userName: userName }, { email: userName }]
-    });
-    if (!userData) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found. Please check the username or email and try again.",
-      });
-    }
+    const { usernameOrEmail, password } = req.body;
 
-    // Check if password matches
-    const isMatch = await bcrypt.compare(password, userData.password);
-    if (!isMatch) {
+    // Validate required fields
+    if (!usernameOrEmail || !password) {
       return res.status(400).json({
-        success: false,
-        message: "Incorrect password. Please try again.",
+        error: 'Username/email and password are required.',
       });
     }
 
-    // Generate payload for the token
-    const payload = {
-      id: userData._id,
-      fullname: userData.fullname,
-      userName: userData.userName,
-      email: userData.email,
-      isAdmin: userData.isAdmin,
-      role: userData.role,
-    };
-
-    // Generate JWT token
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "6d",
+    // Find the user by username or email
+    const user = await User.findOne({
+      $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
     });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+
+    // Check if account is locked or inactive
+    if (
+      user.accountStatus === 'suspended' ||
+      user.accountStatus === 'deactivated'
+    ) {
+      return res.status(403).json({
+        error: `Account is ${user.accountStatus}. Please contact support.`,
+      });
+    }
+    if (user.accountLocked) {
+      return res
+        .status(403)
+        .json({ error: 'Account is locked due to too many failed logins. Please Contact Admin.' });
+    }
+
+
+    // Compare provided password with stored hashed password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      // Increment login attempts and lock account if threshold is reached
+      user.loginAttempts += 1;
+      if (user.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        user.accountLocked = true;
+      }
+      await user.save();
+      return res.status(401).json({
+        error: 'Invalid credentials.',
+        attemptsRemaining: MAX_LOGIN_ATTEMPTS - user.loginAttempts,
+      });
+    }
+
+    // Reset login attempts on successful login
+    user.loginAttempts = 0;
+    user.accountLocked = false;
+
+    // Generate a JWT token
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
+
+    // Record the login log with IP and user agent
+    user.loginLogs.push({
+      ip: req.ip || req.connection.remoteAddress,
+      userAgent: req.headers['user-agent'] || 'unknown',
+    });
+    await user.save();
 
     return res.status(200).json({
-      success: true,
-      message: "Login successful.",
+      message: 'Login successful.',
       token,
       user: {
-        id: userData._id,
-        fullname: userData.fullname,
-        userName: userData.userName,
-        email: userData.email,
-        role: userData.role,
-        isAdmin: userData.isAdmin,
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        membershipType: user.membershipType,
+        accountStatus: user.accountStatus,
       },
     });
   } catch (error) {
-    console.error(`Error during login: ${error.message}`);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error. Please try again later.",
-    });
+    console.error('Login Error:', error);
+    return res
+      .status(500)
+      .json({ error: 'Server error while logging in.' });
   }
 };
 
-
-const getUserProfile = async (req, res) => {
+/**
+ * Get User Profile (Protected Route Example)
+ * GET /api/profile
+ * Requires JWT authentication (middleware should set req.userId)
+ */
+exports.getProfile = async (req, res) => {
   try {
-    const userData = await User.findById(req.params.id);
-    if (!userData) {
-      return res.status(400).send("User Not Found");
+    const userId = req.userId;
+    const user = await User.findById(userId).select('-password -__v');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
     }
-    return res.status(200).json({
-      success: true,
-      userData,
-      message: "Profile Fetched Successfully",
-    });
+    return res.status(200).json({ user });
   } catch (error) {
-    console.log(`Error while Fetching Profile: ${error}`);
-    return res.status(500).send("Internal Server Error");
+    console.error('Get Profile Error:', error);
+    return res
+      .status(500)
+      .json({ error: 'Server error while fetching profile.' });
   }
-};
-
-module.exports = {
-  register,
-  login,
-  getUserProfile,
 };
