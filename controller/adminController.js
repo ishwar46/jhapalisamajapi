@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const DeletedUser = require("../models/deletedUser.model");
 
 /**
  * Promote or demote a user to admin.
@@ -156,5 +157,56 @@ exports.updateUser = async (req, res) => {
         return res.status(500).json({
             error: 'Server error while updating user details.',
         });
+    }
+};
+
+/**
+ * Delete a user (admins or superadmins only)
+ * DELETE /api/admin/delete/:userId
+ * Optional: pass "reason" in req.body
+ */
+exports.deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;  // ID of the user to delete
+        const { reason } = req.body;    // optional reason for deletion
+
+        if (!userId) {
+            return res.status(400).json({ error: 'No userId provided.' });
+        }
+
+        // Find the user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Archive user data in DeletedUser
+        await DeletedUser.create({
+            originalUserId: user._id,
+            fullName: user.fullName,
+            username: user.username,
+            email: user.email,
+            address: user.address,
+            profession: user.profession,
+            membershipType: user.membershipType,
+            membershipFee: user.membershipFee,
+            membershipPaid: user.membershipPaid,
+            donatedAmount: user.donatedAmount,
+            accountExpiry: user.accountExpiry,
+            deletedBy: req.userId,
+            reason: reason || '',
+        });
+
+        // Remove the user from main collection
+        await user.deleteOne();
+
+        return res.status(200).json({
+            message: `User ${user.username} has been deleted.`,
+        });
+    } catch (error) {
+        console.error('DeleteUser Error:', error);
+        return res
+            .status(500)
+            .json({ error: 'Server error while deleting user.' });
     }
 };

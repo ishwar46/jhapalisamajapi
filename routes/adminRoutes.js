@@ -20,4 +20,12 @@ router.patch(
     adminController.updateUser
 );
 
+// Only admins or superadmins can delete a user
+router.delete(
+    '/delete/:userId',
+    authMiddleware,
+    adminMiddleware,
+    adminController.deleteUser
+);
+
 module.exports = router;
