@@ -10,6 +10,12 @@ const userSchema = new mongoose.Schema(
     profession: { type: String, trim: true },
     password: { type: String, required: true },
 
+    profilePicture: {
+      type: String,
+      default: '',
+      trim: true
+    },
+
     // Membership Type
     membershipType: {
       type: String,
@@ -44,10 +50,15 @@ const userSchema = new mongoose.Schema(
     ],
     accountStatus: {
       type: String,
-      enum: ['pending', 'active', 'suspended', 'deactivated'],
+      enum: ['pending', 'active', 'suspended', 'deactivated', 'rejected'],
       default: 'pending',
     },
 
+    // Account expiration date (null until set by admin)
+    accountExpiry: {
+      type: Date,
+      default: null,
+    },
     /**
      * Role
      * - 'user': normal user

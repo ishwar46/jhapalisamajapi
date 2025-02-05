@@ -129,6 +129,11 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials.' });
     }
+    if (user.accountExpiry && user.accountExpiry < new Date()) {
+      return res.status(403).json({
+        error: 'Your membership has expired. Please renew or contact admin.',
+      });
+    }
 
     // Check if account is locked or inactive
     if (
@@ -144,7 +149,6 @@ exports.login = async (req, res) => {
         .status(403)
         .json({ error: 'Account is locked due to too many failed logins. Please Contact Admin.' });
     }
-
 
     // Compare provided password with stored hashed password
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -214,5 +218,59 @@ exports.getProfile = async (req, res) => {
     return res
       .status(500)
       .json({ error: 'Server error while fetching profile.' });
+  }
+};
+
+/**
+ * Get User Profile (Protected Route Example)
+ * PATCH /api/profile
+ * Requires JWT authentication (middleware should set req.userId)
+ */
+
+exports.updateProfile = async (req, res) => {
+  try {
+    // The userId is set by authMiddleware (JWT decode)
+    const userId = req.userId;
+
+    // Accept the fields they may want to update
+    const {
+      fullName,
+      address,
+      contact,
+      profession,
+
+    } = req.body;
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Update only allowable fields
+    if (typeof fullName !== 'undefined') user.fullName = fullName.trim();
+    if (typeof address !== 'undefined') user.address = address.trim();
+    if (typeof contact !== 'undefined') user.contact = contact.trim();
+    if (typeof profession !== 'undefined') user.profession = profession.trim();
+
+    await user.save();
+
+    return res.status(200).json({
+      message: 'Profile updated successfully',
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        email: user.email,
+        address: user.address,
+        contact: user.contact,
+        profession: user.profession,
+      },
+    });
+  } catch (error) {
+    console.error('Update Profile Error:', error);
+    return res.status(500).json({
+      error: 'Server error while updating profile.',
+    });
   }
 };
