@@ -13,5 +13,11 @@ router.post('/promote', authMiddleware, superAdminMiddleware, adminController.pr
 
 // PATCH /api/admin/verify-user
 router.patch('/verify-user', authMiddleware, adminMiddleware, adminController.verifyUser);
+router.patch(
+    '/users/:userIdToEdit',
+    authMiddleware,
+    adminMiddleware,
+    adminController.updateUser
+);
 
 module.exports = router;

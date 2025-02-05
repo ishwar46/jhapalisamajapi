@@ -10,6 +10,12 @@ const userSchema = new mongoose.Schema(
     profession: { type: String, trim: true },
     password: { type: String, required: true },
 
+    profilePicture: {
+      type: String,
+      default: '',
+      trim: true
+    },
+
     // Membership Type
     membershipType: {
       type: String,

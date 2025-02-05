@@ -99,3 +99,62 @@ exports.verifyUser = async (req, res) => {
         });
     }
 };
+
+exports.updateUser = async (req, res) => {
+    try {
+        // We get userIdToEdit from the request body or URL param
+        const { userIdToEdit } = req.params;
+
+        // The fields the admin wants to update
+        const {
+            fullName,
+            address,
+            contact,
+            profession,
+            membershipType,
+            accountStatus,
+            membershipPaid,
+        } = req.body;
+
+        if (!userIdToEdit) {
+            return res.status(400).json({ error: 'No user ID specified.' });
+        }
+
+        const user = await User.findById(userIdToEdit);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Admin can update any fields you allow
+        if (typeof fullName !== 'undefined') user.fullName = fullName.trim();
+        if (typeof address !== 'undefined') user.address = address.trim();
+        if (typeof contact !== 'undefined') user.contact = contact.trim();
+        if (typeof profession !== 'undefined') user.profession = profession.trim();
+        if (typeof membershipType !== 'undefined') user.membershipType = membershipType;
+        if (typeof accountStatus !== 'undefined') user.accountStatus = accountStatus;
+        if (typeof membershipPaid !== 'undefined') user.membershipPaid = membershipPaid;
+
+        await user.save();
+
+        return res.status(200).json({
+            message: 'User updated successfully by admin.',
+            user: {
+                _id: user._id,
+                fullName: user.fullName,
+                username: user.username,
+                email: user.email,
+                address: user.address,
+                contact: user.contact,
+                profession: user.profession,
+                membershipType: user.membershipType,
+                accountStatus: user.accountStatus,
+                membershipPaid: user.membershipPaid,
+            },
+        });
+    } catch (error) {
+        console.error('Admin Update User Error:', error);
+        return res.status(500).json({
+            error: 'Server error while updating user details.',
+        });
+    }
+};

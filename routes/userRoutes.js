@@ -14,6 +14,8 @@ router.post('/login', userController.login);
 
 // Protected route (any authenticated user)
 router.get('/profile', authMiddleware, userController.getProfile);
+router.patch('/update-profile', authMiddleware, userController.updateProfile);
+
 
 // Admin-only route
 router.get('/all-users', authMiddleware, adminMiddleware, async (req, res) => {
