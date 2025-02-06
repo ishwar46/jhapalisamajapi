@@ -43,6 +43,7 @@ app.use("/api/admin", require("./routes/adminRoutes"))
 app.use('/api/uploads', require('./routes/uploadRoutes'));
 app.use('/api/menu-items', require('./routes/menuRoutes'));
 app.use('/api/sidebar', require('./routes/sidebarRoutes'))
+app.use('/api/hero-slides', require('./routes/heroSlideRoutes'));
 
 
 
