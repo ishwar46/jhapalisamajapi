@@ -1,7 +1,7 @@
 // routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controller/adminController');
+const adminController = require('../controllers/adminController');
 
 // Import middlewares
 const authMiddleware = require('../middleware/authMiddleware');

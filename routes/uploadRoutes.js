@@ -1,7 +1,7 @@
 // routes/uploadRoutes.js
 const express = require('express');
 const router = express.Router();
-const uploadController = require('../controller/uploadController');
+const uploadController = require('../controllers/uploadController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // For profile picture
