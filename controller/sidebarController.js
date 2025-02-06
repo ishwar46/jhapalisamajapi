@@ -101,7 +101,7 @@ exports.deleteSidebarItem = async (req, res) => {
 
 exports.getSidebarTree = async (req, res) => {
     try {
-        // Suppose you have a user role from auth middleware
+        
         const role = req.user?.role || 'user';
 
         // Grab all items that contain this role in rolesAllowed
@@ -112,8 +112,7 @@ exports.getSidebarTree = async (req, res) => {
         //console.log('Role used:', role);
         ///console.log('allItems =', JSON.stringify(allItems, null, 2));
 
-
-        // Build a map (dictionary) for quick lookup
+        // a map (dictionary) for quick lookup
         const itemsById = {};
         allItems.forEach((item) => {
             itemsById[item._id] = {
@@ -128,7 +127,7 @@ exports.getSidebarTree = async (req, res) => {
             };
         });
 
-        // 4) Attach children to their parent
+        // Attach children to their parent
         const rootItems = [];
         console.log('rootItems = ', JSON.stringify(rootItems, null, 2));
 
