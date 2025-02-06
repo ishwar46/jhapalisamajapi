@@ -44,6 +44,8 @@ app.use('/api/uploads', require('./routes/uploadRoutes'));
 app.use('/api/menu-items', require('./routes/menuRoutes'));
 app.use('/api/sidebar', require('./routes/sidebarRoutes'))
 app.use('/api/hero-slides', require('./routes/heroSlideRoutes'));
+app.use('/api/gallery', require('./routes/galleryRoutes'));
+
 
 
 

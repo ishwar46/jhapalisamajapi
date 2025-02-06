@@ -24,7 +24,11 @@ function createUploader(subfolderName) {
         },
     });
 
-    return multer({ storage });
+    return multer({
+        storage,
+        // Limit file size (2 MB = 2 * 1024 * 1024)
+        limits: { fileSize: 2 * 1024 * 1024 },
+    });
 }
 
 module.exports = createUploader;
