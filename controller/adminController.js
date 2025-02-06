@@ -194,6 +194,7 @@ exports.deleteUser = async (req, res) => {
             donatedAmount: user.donatedAmount,
             accountExpiry: user.accountExpiry,
             deletedBy: req.userId,
+            role: user.role,
             reason: reason || '',
         });
 
