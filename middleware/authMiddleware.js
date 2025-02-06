@@ -1,4 +1,3 @@
-// middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
@@ -35,9 +34,12 @@ module.exports = async function authMiddleware(req, res, next) {
             return res.status(404).json({ error: 'User not found.' });
         }
 
-        // 5. Attach user or userId to req object
+        // Attach user info to req
         req.userId = user._id;
-
+        req.user = {
+            userId: decoded.userId,
+            role: decoded.role,
+        };
         return next();
     } catch (error) {
         console.error('AuthMiddleware Error:', error);
