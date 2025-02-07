@@ -20,24 +20,26 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
-const directories = [
-    "public/uploads",
-    "public/uploads/portfolioimage",
-    "public/uploads/trustedimage",
-    "public/uploads/staffimage",
-    "public/uploads/technologyimage",
-    "public/uploads/lottieFile",
-    "public/uploads/resumes"
-]
+// const directories = [
+//     "public/uploads",
+//     "public/uploads/portfolioimage",
+//     "public/uploads/trustedimage",
+//     "public/uploads/staffimage",
+//     "public/uploads/technologyimage",
+//     "public/uploads/lottieFile",
+//     "public/uploads/resumes"
+// ]
 
-directories.forEach((dir) => {
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
-})
+// directories.forEach((dir) => {
+//     if (!fs.existsSync(dir)) {
+//         fs.mkdirSync(dir, { recursive: true });
+//     }
+// })
 
+// Serve static files from the uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+//Routes
 app.use("/api/users", require("./routes/userRoutes"))
 app.use("/api/admin", require("./routes/adminRoutes"))
 app.use('/api/uploads', require('./routes/uploadRoutes'));
@@ -47,12 +49,13 @@ app.use('/api/hero-slides', require('./routes/heroSlideRoutes'));
 app.use('/api/gallery', require('./routes/galleryRoutes'));
 app.use('/api/programs', require('./routes/programsRoutes'));
 app.use('/api/testimonials', require('./routes/testimonialsRoutes'));
+app.use('/api/blogs', require('./routes/blogRoutes'));
 
 
 
 
 app.get('/', (req, res) => {
-    res.send("Hello!! This Req is from the Server.....")
+    res.send("Hello!! This is Jhapali Samaja USA")
 })
 
 const PORT = process.env.PORT
