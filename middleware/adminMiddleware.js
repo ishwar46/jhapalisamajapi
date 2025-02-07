@@ -21,8 +21,7 @@ module.exports = async function adminMiddleware(req, res, next) {
             return res.status(403).json({ error: 'Forbidden. Admins only.' });
         }
 
-        // Optional: attach full user object to req
-        // req.user = user;
+        req.user = user;
         next();
     } catch (error) {
         console.error('AdminMiddleware Error:', error);
