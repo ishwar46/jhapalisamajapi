@@ -53,6 +53,8 @@ app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/mission-story', require('./routes/missionStroryRoutes'));
 app.use("/api/stories", require("./routes/storyRoutes"));
+app.use("/api/scholarships", require("./routes/scholarshipRoutes"));
+
 
 
 
