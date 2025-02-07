@@ -51,7 +51,8 @@ app.use('/api/programs', require('./routes/programsRoutes'));
 app.use('/api/testimonials', require('./routes/testimonialsRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
-
+app.use('/api/mission-story', require('./routes/missionStroryRoutes'));
+app.use("/api/stories", require("./routes/storyRoutes"));
 
 
 

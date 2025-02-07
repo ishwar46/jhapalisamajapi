@@ -7,7 +7,7 @@ DB = process.env.DB_URL
 
 const connectToDatabase = () => {
     mongoose.connect(DB).then(() => {
-        console.log(`Database is Connected to Database`)
+        console.log(`Database is Connected`)
     })
 }
 
