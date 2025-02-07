@@ -50,6 +50,7 @@ app.use('/api/gallery', require('./routes/galleryRoutes'));
 app.use('/api/programs', require('./routes/programsRoutes'));
 app.use('/api/testimonials', require('./routes/testimonialsRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
+app.use('/api/contact', require('./routes/contactRoutes'));
 
 
 
