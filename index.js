@@ -45,6 +45,8 @@ app.use("/api/executive-committee", require("./routes/executiveCommitteeRoutes")
 app.use("/api/annual-donations", require("./routes/annualDonationRoutes"));
 app.use("/api/dmv-chapter", require("./routes/dmvChapterRoutes"));
 app.use("/api/texas-chapter", require("./routes/texasChapterRoutes"));
+app.use("/api/documents", require("./routes/documentRoutes"));
+
 
 
 app.get('/', (req, res) => {
