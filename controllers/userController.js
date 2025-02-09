@@ -28,6 +28,13 @@ exports.register = async (req, res) => {
       profession,
       password,
       membershipType,
+      nepalAddress,
+      usCity,
+      usState,
+      canReceiveText,
+      hasSpouse,
+      spouse,
+      familyMembers
     } = req.body;
 
     // Validate required fields
@@ -74,7 +81,7 @@ exports.register = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the new user (membershipType defaults to 'general' if not provided)
+    // Create new user with additional fields
     const user = new User({
       fullName,
       username,
@@ -84,6 +91,13 @@ exports.register = async (req, res) => {
       profession,
       password: hashedPassword,
       membershipType: membershipType || 'general',
+      nepalAddress: nepalAddress || "",
+      usCity: usCity || "",
+      usState: usState || "",
+      canReceiveText: canReceiveText === "yes" || canReceiveText === true,
+      hasSpouse: hasSpouse === "yes" || hasSpouse === true,
+      spouse: hasSpouse === "yes" || hasSpouse === true ? spouse : null,
+      familyMembers: familyMembers ? JSON.parse(familyMembers) : []
     });
 
     await user.save();

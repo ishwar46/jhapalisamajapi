@@ -1,5 +1,19 @@
 const mongoose = require('mongoose');
 
+const familyMemberSchema = new mongoose.Schema({
+  fullName: { type: String, required: true, trim: true },
+  profession: { type: String, trim: true },
+  email: { type: String, trim: true, lowercase: true },
+  relationship: { type: String, trim: true },
+});
+
+const spouseSchema = new mongoose.Schema({
+  fullName: { type: String, required: true, trim: true },
+  profession: { type: String, trim: true },
+  contact: { type: String, trim: true },
+  email: { type: String, trim: true, lowercase: true },
+});
+
 const userSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true, trim: true },
@@ -16,15 +30,19 @@ const userSchema = new mongoose.Schema(
       trim: true
     },
 
-    // Membership Type
+    nepalAddress: { type: String, trim: true, default: "" },
+    usCity: { type: String, trim: true, default: "" },
+    usState: { type: String, trim: true, default: "" },
+    canReceiveText: { type: Boolean, default: false },
+    hasSpouse: { type: Boolean, default: false },
+    spouse: { type: spouseSchema, default: null },
+    familyMembers: [familyMemberSchema],
     membershipType: {
       type: String,
       enum: ['general', 'patron', 'associate', 'supporter'],
       default: 'general',
       required: true,
     },
-
-    // Payment Tracking, etc...
     membershipFee: { type: Number, default: 0 },
     membershipPaid: { type: Boolean, default: false },
     membershipPaidAt: { type: Date, default: null },
@@ -37,8 +55,6 @@ const userSchema = new mongoose.Schema(
         uploadedAt: { type: Date, default: Date.now },
       },
     ],
-
-    // Account Locking and Status
     accountLocked: { type: Boolean, default: false },
     loginAttempts: { type: Number, default: 0 },
     loginLogs: [
@@ -53,14 +69,10 @@ const userSchema = new mongoose.Schema(
       enum: ['pending', 'active', 'suspended', 'deactivated', 'rejected'],
       default: 'pending',
     },
+    accountExpiry: { type: Date, default: null },
 
-    // Account expiration date (null until set by admin)
-    accountExpiry: {
-      type: Date,
-      default: null,
-    },
     /**
-     * Role
+     * Role:
      * - 'user': normal user
      * - 'admin': has admin privileges
      * - 'superadmin': can promote other users to admin, etc.
