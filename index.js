@@ -5,6 +5,7 @@ const connectToDatabase = require("./database/db")
 const fs = require("fs")
 const path = require("path")
 
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,22 +20,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-
-// const directories = [
-//     "public/uploads",
-//     "public/uploads/portfolioimage",
-//     "public/uploads/trustedimage",
-//     "public/uploads/staffimage",
-//     "public/uploads/technologyimage",
-//     "public/uploads/lottieFile",
-//     "public/uploads/resumes"
-// ]
-
-// directories.forEach((dir) => {
-//     if (!fs.existsSync(dir)) {
-//         fs.mkdirSync(dir, { recursive: true });
-//     }
-// })
 
 // Serve static files from the uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -56,7 +41,8 @@ app.use("/api/stories", require("./routes/storyRoutes"));
 app.use("/api/scholarships", require("./routes/scholarshipRoutes"));
 app.use("/api/scholarship-recipients", require("./routes/scholarshipRecipientsRoutes"));
 app.use("/api/hearse-vehicles", require("./routes/hearseVehicleRoutes"));
-app.use("/api/executive-committee", require("./routes/executiveCommitteeRoutes"))
+app.use("/api/executive-committee", require("./routes/executiveCommitteeRoutes"));
+app.use("/api/annual-donations", require("./routes/annualDonationRoutes"));
 
 app.get('/', (req, res) => {
     res.send("Hello!! This is Jhapali Samaja USA")
