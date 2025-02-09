@@ -1,17 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const isValidEmail = require('../utils/Validators');
 
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
-
-// Simple email validator
-const validateEmail = (email) => {
-  const regex = /^\S+@\S+\.\S+$/;
-  return regex.test(email);
-};
 
 /**
  * Register a new user
@@ -28,6 +23,13 @@ exports.register = async (req, res) => {
       profession,
       password,
       membershipType,
+      nepalAddress,
+      usCity,
+      usState,
+      canReceiveText,
+      hasSpouse,
+      spouse,
+      familyMembers
     } = req.body;
 
     // Validate required fields
@@ -40,7 +42,7 @@ exports.register = async (req, res) => {
     }
     if (!email || email.trim() === '') {
       errors.email = 'Email is required.';
-    } else if (!validateEmail(email)) {
+    } else if (!isValidEmail(email)) {
       errors.email = 'Please enter a valid email address.';
     }
     if (!address || address.trim() === '') {
@@ -74,7 +76,7 @@ exports.register = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the new user (membershipType defaults to 'general' if not provided)
+    // Create new user with additional fields
     const user = new User({
       fullName,
       username,
@@ -84,6 +86,13 @@ exports.register = async (req, res) => {
       profession,
       password: hashedPassword,
       membershipType: membershipType || 'general',
+      nepalAddress: nepalAddress || "",
+      usCity: usCity || "",
+      usState: usState || "",
+      canReceiveText: canReceiveText === "yes" || canReceiveText === true,
+      hasSpouse: hasSpouse === "yes" || hasSpouse === true,
+      spouse: hasSpouse === "yes" || hasSpouse === true ? spouse : null,
+      familyMembers: familyMembers ? JSON.parse(familyMembers) : []
     });
 
     await user.save();
