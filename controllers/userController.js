@@ -1,17 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const isValidEmail = require('../utils/Validators');
 
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
-
-// Simple email validator
-const validateEmail = (email) => {
-  const regex = /^\S+@\S+\.\S+$/;
-  return regex.test(email);
-};
 
 /**
  * Register a new user
@@ -47,7 +42,7 @@ exports.register = async (req, res) => {
     }
     if (!email || email.trim() === '') {
       errors.email = 'Email is required.';
-    } else if (!validateEmail(email)) {
+    } else if (!isValidEmail(email)) {
       errors.email = 'Please enter a valid email address.';
     }
     if (!address || address.trim() === '') {
