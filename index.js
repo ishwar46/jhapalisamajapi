@@ -55,6 +55,7 @@ app.use('/api/mission-story', require('./routes/missionStroryRoutes'));
 app.use("/api/stories", require("./routes/storyRoutes"));
 app.use("/api/scholarships", require("./routes/scholarshipRoutes"));
 app.use("/api/scholarship-recipients", require("./routes/scholarshipRecipientsRoutes"));
+app.use("/api/hearse-vehicles", require("./routes/hearseVehicleRoutes"));
 
 
 app.get('/', (req, res) => {
