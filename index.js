@@ -56,7 +56,7 @@ app.use("/api/stories", require("./routes/storyRoutes"));
 app.use("/api/scholarships", require("./routes/scholarshipRoutes"));
 app.use("/api/scholarship-recipients", require("./routes/scholarshipRecipientsRoutes"));
 app.use("/api/hearse-vehicles", require("./routes/hearseVehicleRoutes"));
-
+app.use("/api/executive-committee", require("./routes/executiveCommitteeRoutes"))
 
 app.get('/', (req, res) => {
     res.send("Hello!! This is Jhapali Samaja USA")
