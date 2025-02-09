@@ -43,7 +43,9 @@ app.use("/api/scholarship-recipients", require("./routes/scholarshipRecipientsRo
 app.use("/api/hearse-vehicles", require("./routes/hearseVehicleRoutes"));
 app.use("/api/executive-committee", require("./routes/executiveCommitteeRoutes"));
 app.use("/api/annual-donations", require("./routes/annualDonationRoutes"));
-app.use("/api/dmv-chapter", require("./routes/dmvChapterRoutes"))
+app.use("/api/dmv-chapter", require("./routes/dmvChapterRoutes"));
+app.use("/api/texas-chapter", require("./routes/texasChapterRoutes"));
+
 
 app.get('/', (req, res) => {
     res.send("Hello!! This is Jhapali Samaja USA")
