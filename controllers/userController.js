@@ -127,6 +127,7 @@ exports.login = async (req, res) => {
     // Validate required fields
     if (!usernameOrEmail || !password) {
       return res.status(400).json({
+        success: false,
         error: 'Username/email and password are required.',
       });
     }
@@ -136,10 +137,15 @@ exports.login = async (req, res) => {
       $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
     });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials.',
+      });
     }
+
     if (user.accountExpiry && user.accountExpiry < new Date()) {
       return res.status(403).json({
+        success: false,
         error: 'Your membership has expired. Please renew or contact admin.',
       });
     }
@@ -150,13 +156,16 @@ exports.login = async (req, res) => {
       user.accountStatus === 'deactivated'
     ) {
       return res.status(403).json({
+        success: false,
         error: `Account is ${user.accountStatus}. Please contact support.`,
       });
     }
+
     if (user.accountLocked) {
-      return res
-        .status(403)
-        .json({ error: 'Account is locked due to too many failed logins. Please Contact Admin.' });
+      return res.status(403).json({
+        success: false,
+        error: 'Account is locked due to too many failed logins. Please Contact Admin.',
+      });
     }
 
     // Compare provided password with stored hashed password
@@ -169,6 +178,7 @@ exports.login = async (req, res) => {
       }
       await user.save();
       return res.status(401).json({
+        success: false,
         error: 'Invalid credentials.',
         attemptsRemaining: MAX_LOGIN_ATTEMPTS - user.loginAttempts,
       });
@@ -190,7 +200,9 @@ exports.login = async (req, res) => {
     });
     await user.save();
 
+    // Success response
     return res.status(200).json({
+      success: true, // Added success field
       message: 'Login successful.',
       token,
       user: {
@@ -203,14 +215,18 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login Error:', error);
-    return res
-      .status(500)
-      .json({ error: 'Server error while logging in.' });
+
+    // Error response
+    return res.status(500).json({
+      success: false,
+      error: 'Server error while logging in.',
+    });
   }
 };
 
+
 /**
- * Get User Profile (Protected Route Example)
+ * Get User Profile
  * GET /api/profile
  * Requires JWT authentication (middleware should set req.userId)
  */
@@ -231,7 +247,7 @@ exports.getProfile = async (req, res) => {
 };
 
 /**
- * Get User Profile (Protected Route Example)
+ * User Profile 
  * PATCH /api/profile
  * Requires JWT authentication (middleware should set req.userId)
  */
