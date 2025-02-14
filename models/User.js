@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const familyMemberSchema = new mongoose.Schema({
   fullName: { type: String, required: true, trim: true },
@@ -8,7 +8,7 @@ const familyMemberSchema = new mongoose.Schema({
 });
 
 const spouseSchema = new mongoose.Schema({
-  fullName: { type: String, required: true, trim: true },
+  fullName: { type: String, trim: true },
   profession: { type: String, trim: true },
   contact: { type: String, trim: true },
   email: { type: String, trim: true, lowercase: true },
@@ -18,29 +18,33 @@ const userSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true, trim: true },
     username: { type: String, required: true, unique: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    address: { type: String, trim: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
     contact: { type: String, trim: true },
     profession: { type: String, trim: true },
     password: { type: String, required: true },
 
     profilePicture: {
       type: String,
-      default: '',
-      trim: true
+      default: "",
+      trim: true,
     },
 
-    nepalAddress: { type: String, trim: true, default: "" },
-    usCity: { type: String, trim: true, default: "" },
-    usState: { type: String, trim: true, default: "" },
+    city: { type: String, trim: true, default: "" },
+    state: { type: String, trim: true, default: "" },
     canReceiveText: { type: Boolean, default: false },
     hasSpouse: { type: Boolean, default: false },
     spouse: { type: spouseSchema, default: null },
     familyMembers: [familyMemberSchema],
     membershipType: {
       type: String,
-      enum: ['general', 'patron', 'associate', 'supporter'],
-      default: 'general',
+      enum: ["general", "patron", "associate", "supporter"],
+      default: "general",
       required: true,
     },
     membershipFee: { type: Number, default: 0 },
@@ -66,8 +70,8 @@ const userSchema = new mongoose.Schema(
     ],
     accountStatus: {
       type: String,
-      enum: ['pending', 'active', 'suspended', 'deactivated', 'rejected'],
-      default: 'pending',
+      enum: ["pending", "active", "suspended", "deactivated", "rejected"],
+      default: "pending",
     },
     accountExpiry: { type: Date, default: null },
 
@@ -79,12 +83,12 @@ const userSchema = new mongoose.Schema(
      */
     role: {
       type: String,
-      enum: ['user', 'admin', 'superadmin'],
-      default: 'user',
+      enum: ["user", "admin", "superadmin"],
+      default: "user",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
