@@ -1,10 +1,9 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 function createUploader(subfolderName) {
-
-    const uploadPath = path.join(__dirname, '..', 'uploads', subfolderName);
+    const uploadPath = path.join(__dirname, "..", "uploads", subfolderName);
     if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -16,12 +15,16 @@ function createUploader(subfolderName) {
             const ext = path.extname(file.originalname);
             const baseName = path.basename(file.originalname, ext);
             const uniqueSuffix = Date.now();
-            cb(null, `${baseName}-${uniqueSuffix}${ext}`);
-        }
+            const fileName = `${baseName}-${uniqueSuffix}${ext}`;
+            req.fileRelativePath = `/uploads/${subfolderName}/${fileName}`;
+            cb(null, fileName);
+        },
     });
+
+
     return multer({
         storage,
-        limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit 
+        limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
         fileFilter: (req, file, cb) => {
             // Allow image files and PDF files
             if (
@@ -32,7 +35,7 @@ function createUploader(subfolderName) {
             } else {
                 cb(new Error("Only image and PDF files are allowed!"), false);
             }
-        }
+        },
     });
 }
 
