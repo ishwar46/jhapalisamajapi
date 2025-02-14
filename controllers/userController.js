@@ -1,61 +1,62 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const isValidEmail = require('../utils/Validators');
-
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const isValidEmail = require("../utils/Validators");
 
 const MAX_LOGIN_ATTEMPTS = 5;
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
+const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
 
 /**
  * Register a new user
  * POST /api/register
  */
 exports.register = async (req, res) => {
+  console.log(req.body);
   try {
     const {
       fullName,
       username,
       email,
-      address,
       contact,
       profession,
       password,
       membershipType,
-      nepalAddress,
-      usCity,
-      usState,
+      city,
+      state,
       canReceiveText,
       hasSpouse,
       spouse,
-      familyMembers
+      familyMembers,
     } = req.body;
 
     // Validate required fields
     const errors = {};
-    if (!fullName || fullName.trim() === '') {
-      errors.fullName = 'Full Name is required.';
+    if (!fullName || fullName.trim() === "") {
+      errors.fullName = "Full Name is required.";
     }
-    if (!username || username.trim() === '') {
-      errors.username = 'Username is required.';
+    if (!username || username.trim() === "") {
+      errors.username = "Username is required.";
     }
-    if (!email || email.trim() === '') {
-      errors.email = 'Email is required.';
+    if (!email || email.trim() === "") {
+      errors.email = "Email is required.";
     } else if (!isValidEmail(email)) {
-      errors.email = 'Please enter a valid email address.';
+      errors.email = "Please enter a valid email address.";
     }
-    if (!address || address.trim() === '') {
-      errors.address = 'Address is required.';
+    if (!city || city.trim() === "") {
+      errors.city = "City is required.";
     }
-    if (!contact || contact.trim() === '') {
-      errors.contact = 'Contact is required.';
+    if (!state || state.trim() === "") {
+      errors.state = "State is required.";
     }
-    if (!profession || profession.trim() === '') {
-      errors.profession = 'Profession is required.';
+    if (!contact || contact.trim() === "") {
+      errors.contact = "Contact is required.";
+    }
+    if (!profession || profession.trim() === "") {
+      errors.profession = "Profession is required.";
     }
     if (!password) {
-      errors.password = 'Password is required.';
+      errors.password = "Password is required.";
     }
 
     // If any errors, return 400 Bad Request with details
@@ -70,7 +71,7 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ error: 'Username or Email already exists.' });
+        .json({ error: "Username or Email already exists." });
     }
 
     // Hash the password
@@ -81,24 +82,28 @@ exports.register = async (req, res) => {
       fullName,
       username,
       email,
-      address,
       contact,
       profession,
       password: hashedPassword,
-      membershipType: membershipType || 'general',
-      nepalAddress: nepalAddress || "",
-      usCity: usCity || "",
-      usState: usState || "",
-      canReceiveText: canReceiveText === "yes" || canReceiveText === true,
+      membershipType: membershipType || "general",
+      city: city || "",
+      state: state || "",
+      canReceiveText: canReceiveText || "false",
       hasSpouse: hasSpouse === "yes" || hasSpouse === true,
-      spouse: hasSpouse === "yes" || hasSpouse === true ? spouse : null,
-      familyMembers: familyMembers ? JSON.parse(familyMembers) : []
+      spouse: spouse ? spouse : null,
+      familyMembers: typeof familyMembers === "string"
+        ? JSON.parse(familyMembers)
+        : Array.isArray(familyMembers)
+          ? familyMembers
+          : Object.values(familyMembers) || [],
+      ...(req.fileRelativePath && { profilePicture: req.fileRelativePath })
     });
+
 
     await user.save();
 
     return res.status(201).json({
-      message: 'User registered successfully.',
+      message: "User registered successfully.",
       user: {
         _id: user._id,
         username: user.username,
@@ -109,10 +114,10 @@ exports.register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Register Error:', error);
+    console.error("Register Error:", error);
     return res
       .status(500)
-      .json({ error: 'Server error while registering user.' });
+      .json({ error: "Server error while registering user." });
   }
 };
 
@@ -127,8 +132,7 @@ exports.login = async (req, res) => {
     // Validate required fields
     if (!usernameOrEmail || !password) {
       return res.status(400).json({
-        success: false,
-        error: 'Username/email and password are required.',
+        error: "Username/email and password are required.",
       });
     }
 
@@ -137,34 +141,27 @@ exports.login = async (req, res) => {
       $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
     });
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid credentials.',
-      });
+      return res.status(401).json({ error: "Invalid credentials." });
     }
-
     if (user.accountExpiry && user.accountExpiry < new Date()) {
       return res.status(403).json({
-        success: false,
-        error: 'Your membership has expired. Please renew or contact admin.',
+        error: "Your membership has expired. Please renew or contact admin.",
       });
     }
 
     // Check if account is locked or inactive
     if (
-      user.accountStatus === 'suspended' ||
-      user.accountStatus === 'deactivated'
+      user.accountStatus === "suspended" ||
+      user.accountStatus === "deactivated"
     ) {
       return res.status(403).json({
-        success: false,
         error: `Account is ${user.accountStatus}. Please contact support.`,
       });
     }
-
     if (user.accountLocked) {
       return res.status(403).json({
-        success: false,
-        error: 'Account is locked due to too many failed logins. Please Contact Admin.',
+        error:
+          "Account is locked due to too many failed logins. Please Contact Admin.",
       });
     }
 
@@ -178,8 +175,7 @@ exports.login = async (req, res) => {
       }
       await user.save();
       return res.status(401).json({
-        success: false,
-        error: 'Invalid credentials.',
+        error: "Invalid credentials.",
         attemptsRemaining: MAX_LOGIN_ATTEMPTS - user.loginAttempts,
       });
     }
@@ -196,14 +192,13 @@ exports.login = async (req, res) => {
     // Record the login log with IP and user agent
     user.loginLogs.push({
       ip: req.ip || req.connection.remoteAddress,
-      userAgent: req.headers['user-agent'] || 'unknown',
+      userAgent: req.headers["user-agent"] || "unknown",
     });
     await user.save();
 
-    // Success response
     return res.status(200).json({
-      success: true, // Added success field
-      message: 'Login successful.',
+      success: true,
+      message: "Login successful.",
       token,
       user: {
         _id: user._id,
@@ -214,16 +209,10 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Login Error:', error);
-
-    // Error response
-    return res.status(500).json({
-      success: false,
-      error: 'Server error while logging in.',
-    });
+    console.error("Login Error:", error);
+    return res.status(500).json({ error: "Server error while logging in." });
   }
 };
-
 
 /**
  * Get User Profile
@@ -233,21 +222,21 @@ exports.login = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId).select('-password -__v');
+    const user = await User.findById(userId).select("-password -__v");
     if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+      return res.status(404).json({ error: "User not found." });
     }
     return res.status(200).json({ user });
   } catch (error) {
-    console.error('Get Profile Error:', error);
+    console.error("Get Profile Error:", error);
     return res
       .status(500)
-      .json({ error: 'Server error while fetching profile.' });
+      .json({ error: "Server error while fetching profile." });
   }
 };
 
 /**
- * User Profile 
+ * Get User Profile
  * PATCH /api/profile
  * Requires JWT authentication (middleware should set req.userId)
  */
@@ -258,30 +247,24 @@ exports.updateProfile = async (req, res) => {
     const userId = req.userId;
 
     // Accept the fields they may want to update
-    const {
-      fullName,
-      address,
-      contact,
-      profession,
-
-    } = req.body;
+    const { fullName, address, contact, profession } = req.body;
 
     // Find the user
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+      return res.status(404).json({ error: "User not found." });
     }
 
     // Update only allowable fields
-    if (typeof fullName !== 'undefined') user.fullName = fullName.trim();
-    if (typeof address !== 'undefined') user.address = address.trim();
-    if (typeof contact !== 'undefined') user.contact = contact.trim();
-    if (typeof profession !== 'undefined') user.profession = profession.trim();
+    if (typeof fullName !== "undefined") user.fullName = fullName.trim();
+    if (typeof address !== "undefined") user.address = address.trim();
+    if (typeof contact !== "undefined") user.contact = contact.trim();
+    if (typeof profession !== "undefined") user.profession = profession.trim();
 
     await user.save();
 
     return res.status(200).json({
-      message: 'Profile updated successfully',
+      message: "Profile updated successfully",
       user: {
         _id: user._id,
         fullName: user.fullName,
@@ -293,9 +276,9 @@ exports.updateProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Update Profile Error:', error);
+    console.error("Update Profile Error:", error);
     return res.status(500).json({
-      error: 'Server error while updating profile.',
+      error: "Server error while updating profile.",
     });
   }
 };
