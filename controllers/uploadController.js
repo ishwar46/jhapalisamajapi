@@ -33,11 +33,11 @@ exports.uploadProfilePicture = [
             }
 
             // Save file path to user document
-            user.profilePicture = req.file.path;
+            user.profilePicture = req.fileRelativePath;
             await user.save();
 
             return res.status(200).json({
-                message: 'Profile picture uploaded successfully.',
+                message: 'Profile picture added successfully.',
                 profilePicture: user.profilePicture,
             });
         } catch (error) {
@@ -76,11 +76,12 @@ exports.uploadReceipt = [
                 return res.status(404).json({ error: 'User not found.' });
             }
 
-            // Store in user.receipts array for example
             user.receipts.push({
                 fileName: req.file.filename,
-                filePath: req.file.path,
+                filePath: req.fileRelativePath,
+                uploadedAt: new Date()
             });
+
             await user.save();
 
             return res.status(200).json({
@@ -95,3 +96,4 @@ exports.uploadReceipt = [
         }
     },
 ];
+
