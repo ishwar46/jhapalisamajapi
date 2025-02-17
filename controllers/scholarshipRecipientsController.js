@@ -7,12 +7,12 @@ const recipientUploader = createUploader("recipients").single("recipientImage");
  * Expects a form-data field named "recipientImage"
  */
 exports.uploadRecipientImageMiddleware = (req, res, next) => {
-    recipientUploader(req, res, (err) => {
-        if (err) {
-            return res.status(400).json({ error: err.message });
-        }
-        next();
-    });
+  recipientUploader(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
 };
 
 /**
@@ -20,21 +20,28 @@ exports.uploadRecipientImageMiddleware = (req, res, next) => {
  * Public endpoint: Retrieve the Scholarship Recipients page details.
  */
 exports.getScholarshipRecipientsPage = async (req, res) => {
-    try {
-        let page = await ScholarshipRecipientsPage.findOne();
-        if (!page) {
-            // Create a default document if none exists
-            page = new ScholarshipRecipientsPage({
-                pageTitle: "Scholarship Recipients",
-                pageDescription: "Discover the students receiving support through our scholarship program."
-            });
-            await page.save();
-        }
-        return res.status(200).json(page);
-    } catch (error) {
-        console.error("getScholarshipRecipientsPage Error:", error);
-        return res.status(500).json({ error: "Server error fetching scholarship recipients page." });
+  try {
+    let page = await ScholarshipRecipientsPage.findOne().populate(
+      "recipients.contributor",
+      "fullName profilePicture email"
+    );
+    console.log(page);
+    if (!page) {
+      // Create a default document if none exists
+      page = new ScholarshipRecipientsPage({
+        pageTitle: "Scholarship Recipients",
+        pageDescription:
+          "Discover the students receiving support through our scholarship program.",
+      });
+      await page.save();
     }
+    return res.status(200).json(page);
+  } catch (error) {
+    console.error("getScholarshipRecipientsPage Error:", error);
+    return res
+      .status(500)
+      .json({ error: "Server error fetching scholarship recipients page." });
+  }
 };
 
 /**
@@ -42,23 +49,25 @@ exports.getScholarshipRecipientsPage = async (req, res) => {
  * Admin-only endpoint: Update the page-level info (pageTitle, pageDescription).
  */
 exports.updateScholarshipRecipientsPage = async (req, res) => {
-    try {
-        const { pageTitle, pageDescription } = req.body;
-        let page = await ScholarshipRecipientsPage.findOne();
-        if (!page) {
-            page = new ScholarshipRecipientsPage();
-        }
-        if (pageTitle !== undefined) page.pageTitle = pageTitle;
-        if (pageDescription !== undefined) page.pageDescription = pageDescription;
-        await page.save();
-        return res.status(200).json({
-            message: "Scholarship recipients page updated successfully.",
-            page,
-        });
-    } catch (error) {
-        console.error("updateScholarshipRecipientsPage Error:", error);
-        return res.status(500).json({ error: "Server error updating scholarship recipients page." });
+  try {
+    const { pageTitle, pageDescription } = req.body;
+    let page = await ScholarshipRecipientsPage.findOne();
+    if (!page) {
+      page = new ScholarshipRecipientsPage();
     }
+    if (pageTitle !== undefined) page.pageTitle = pageTitle;
+    if (pageDescription !== undefined) page.pageDescription = pageDescription;
+    await page.save();
+    return res.status(200).json({
+      message: "Scholarship recipients page updated successfully.",
+      page,
+    });
+  } catch (error) {
+    console.error("updateScholarshipRecipientsPage Error:", error);
+    return res
+      .status(500)
+      .json({ error: "Server error updating scholarship recipients page." });
+  }
 };
 
 /**
@@ -70,43 +79,54 @@ exports.updateScholarshipRecipientsPage = async (req, res) => {
  *   - File field: recipientImage (optional)
  */
 exports.addRecipientItem = async (req, res) => {
-    try {
-        const { studentName, district, school, grade, address, contributor, contributorName } = req.body;
-        if (!studentName) {
-            return res.status(400).json({ error: "Student name is required." });
-        }
-
-        let page = await ScholarshipRecipientsPage.findOne();
-        if (!page) {
-            page = new ScholarshipRecipientsPage();
-            await page.save();
-        }
-
-        let imagePath = "";
-        if (req.file) {
-            imagePath = req.file.path;
-        }
-
-        page.recipients.push({
-            studentName,
-            image: imagePath,
-            district: district || "",
-            school: school || "",
-            grade: grade || "",
-            address: address || "",
-            contributor: contributor || undefined,
-            contributorName: contributorName || "",
-        });
-
-        await page.save();
-        return res.status(201).json({
-            message: "Scholarship recipient added successfully.",
-            page,
-        });
-    } catch (error) {
-        console.error("addRecipientItem Error:", error);
-        return res.status(500).json({ error: "Server error adding scholarship recipient." });
+  try {
+    const {
+      studentName,
+      district,
+      school,
+      grade,
+      address,
+      contributor,
+      contributorName,
+    } = req.body;
+    if (!studentName) {
+      return res.status(400).json({ error: "Student name is required." });
     }
+
+    let page = await ScholarshipRecipientsPage.findOne();
+    if (!page) {
+      page = new ScholarshipRecipientsPage();
+      await page.save();
+    }
+
+    let imagePath = "";
+    if (req.file) {
+      imagePath = req.file.path;
+      imageName = req.file.filename;
+    }
+
+    page.recipients.push({
+      studentName,
+      image: imageName,
+      district: district || "",
+      school: school || "",
+      grade: grade || "",
+      address: address || "",
+      contributor: contributor || undefined,
+      contributorName: contributorName || "",
+    });
+
+    await page.save();
+    return res.status(201).json({
+      message: "Scholarship recipient added successfully.",
+      page,
+    });
+  } catch (error) {
+    console.error("addRecipientItem Error:", error);
+    return res
+      .status(500)
+      .json({ error: "Server error adding scholarship recipient." });
+  }
 };
 
 /**
@@ -115,41 +135,54 @@ exports.addRecipientItem = async (req, res) => {
  * Accepts form-data with text fields and optionally a new file for recipientImage.
  */
 exports.updateRecipientItem = async (req, res) => {
-    try {
-        const { recipientId } = req.params;
-        const { studentName, district, school, grade, address, contributor, contributorName } = req.body;
+  try {
+    const { recipientId } = req.params;
+    const {
+      studentName,
+      district,
+      school,
+      grade,
+      address,
+      contributor,
+      contributorName,
+    } = req.body;
 
-        let page = await ScholarshipRecipientsPage.findOne();
-        if (!page) {
-            return res.status(404).json({ error: "Scholarship recipients page not found." });
-        }
-
-        const recipient = page.recipients.id(recipientId);
-        if (!recipient) {
-            return res.status(404).json({ error: "Recipient not found." });
-        }
-
-        if (studentName !== undefined) recipient.studentName = studentName;
-        if (district !== undefined) recipient.district = district;
-        if (school !== undefined) recipient.school = school;
-        if (grade !== undefined) recipient.grade = grade;
-        if (address !== undefined) recipient.address = address;
-        if (contributor !== undefined) recipient.contributor = contributor;
-        if (contributorName !== undefined) recipient.contributorName = contributorName;
-
-        if (req.file) {
-            recipient.image = req.file.path;
-        }
-
-        await page.save();
-        return res.status(200).json({
-            message: "Scholarship recipient updated successfully.",
-            page,
-        });
-    } catch (error) {
-        console.error("updateRecipientItem Error:", error);
-        return res.status(500).json({ error: "Server error updating scholarship recipient." });
+    let page = await ScholarshipRecipientsPage.findOne();
+    if (!page) {
+      return res
+        .status(404)
+        .json({ error: "Scholarship recipients page not found." });
     }
+
+    const recipient = page.recipients.id(recipientId);
+    if (!recipient) {
+      return res.status(404).json({ error: "Recipient not found." });
+    }
+
+    if (studentName !== undefined) recipient.studentName = studentName;
+    if (district !== undefined) recipient.district = district;
+    if (school !== undefined) recipient.school = school;
+    if (grade !== undefined) recipient.grade = grade;
+    if (address !== undefined) recipient.address = address;
+    if (contributor !== undefined) recipient.contributor = contributor;
+    if (contributorName !== undefined)
+      recipient.contributorName = contributorName;
+
+    if (req.file) {
+      recipient.image = req.file.path;
+    }
+
+    await page.save();
+    return res.status(200).json({
+      message: "Scholarship recipient updated successfully.",
+      page,
+    });
+  } catch (error) {
+    console.error("updateRecipientItem Error:", error);
+    return res
+      .status(500)
+      .json({ error: "Server error updating scholarship recipient." });
+  }
 };
 
 /**
@@ -157,24 +190,28 @@ exports.updateRecipientItem = async (req, res) => {
  * Admin-only endpoint: Delete a scholarship recipient from the page.
  */
 exports.deleteRecipientItem = async (req, res) => {
-    try {
-        const { recipientId } = req.params;
-        let page = await ScholarshipRecipientsPage.findOne();
-        if (!page) {
-            return res.status(404).json({ error: "Scholarship recipients page not found." });
-        }
-        const recipient = page.recipients.id(recipientId);
-        if (!recipient) {
-            return res.status(404).json({ error: "Recipient not found." });
-        }
-        page.recipients.pull(recipientId);
-        await page.save();
-        return res.status(200).json({
-            message: "Scholarship recipient deleted successfully.",
-            page,
-        });
-    } catch (error) {
-        console.error("deleteRecipientItem Error:", error);
-        return res.status(500).json({ error: "Server error deleting scholarship recipient." });
+  try {
+    const { recipientId } = req.params;
+    let page = await ScholarshipRecipientsPage.findOne();
+    if (!page) {
+      return res
+        .status(404)
+        .json({ error: "Scholarship recipients page not found." });
     }
+    const recipient = page.recipients.id(recipientId);
+    if (!recipient) {
+      return res.status(404).json({ error: "Recipient not found." });
+    }
+    page.recipients.pull(recipientId);
+    await page.save();
+    return res.status(200).json({
+      message: "Scholarship recipient deleted successfully.",
+      page,
+    });
+  } catch (error) {
+    console.error("deleteRecipientItem Error:", error);
+    return res
+      .status(500)
+      .json({ error: "Server error deleting scholarship recipient." });
+  }
 };

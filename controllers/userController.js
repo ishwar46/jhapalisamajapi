@@ -43,9 +43,7 @@ exports.register = async (req, res) => {
     } else if (!isValidEmail(email)) {
       errors.email = "Please enter a valid email address.";
     }
-    if (!city || city.trim() === "") {
-      errors.city = "City is required.";
-    }
+
     if (!state || state.trim() === "") {
       errors.state = "State is required.";
     }
@@ -86,7 +84,7 @@ exports.register = async (req, res) => {
       profession,
       password: hashedPassword,
       membershipType: membershipType || "general",
-      city: city || "",
+      city: city && city !== "Other" ? city : state,
       state: state || "",
       canReceiveText: canReceiveText || "false",
       hasSpouse: hasSpouse === "yes" || hasSpouse === true,
@@ -133,7 +131,7 @@ exports.login = async (req, res) => {
     if (!usernameOrEmail || !password) {
       return res.status(400).json({
         success: false,
-        error: 'Username/email and password are required.',
+        error: "Username/email and password are required.",
       });
     }
 
@@ -144,14 +142,14 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid credentials.',
+        error: "Invalid credentials.",
       });
     }
 
     if (user.accountExpiry && user.accountExpiry < new Date()) {
       return res.status(403).json({
         success: false,
-        error: 'Your membership has expired. Please renew or contact admin.',
+        error: "Your membership has expired. Please renew or contact admin.",
       });
     }
 
@@ -169,7 +167,8 @@ exports.login = async (req, res) => {
     if (user.accountLocked) {
       return res.status(403).json({
         success: false,
-        error: 'Account is locked due to too many failed logins. Please Contact Admin.',
+        error:
+          "Account is locked due to too many failed logins. Please Contact Admin.",
       });
     }
 
@@ -184,7 +183,7 @@ exports.login = async (req, res) => {
       await user.save();
       return res.status(401).json({
         success: false,
-        error: 'Invalid credentials.',
+        error: "Invalid credentials.",
         attemptsRemaining: MAX_LOGIN_ATTEMPTS - user.loginAttempts,
       });
     }
@@ -208,7 +207,7 @@ exports.login = async (req, res) => {
     // Success response
     return res.status(200).json({
       success: true, // Added success field
-      message: 'Login successful.',
+      message: "Login successful.",
       token,
       user: {
         _id: user._id,
@@ -219,16 +218,15 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Login Error:', error);
+    console.error("Login Error:", error);
 
     // Error response
     return res.status(500).json({
       success: false,
-      error: 'Server error while logging in.',
+      error: "Server error while logging in.",
     });
   }
 };
-
 
 /**
  * Get User Profile
@@ -252,7 +250,7 @@ exports.getProfile = async (req, res) => {
 };
 
 /**
- * User Profile 
+ * User Profile
  * PATCH /api/profile
  * Requires JWT authentication (middleware should set req.userId)
  */
