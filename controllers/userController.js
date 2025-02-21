@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const isValidEmail = require("../utils/Validators");
+const { sendEmail } = require("../middleware/nodeMailer");
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
@@ -12,7 +13,6 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
  * POST /api/register
  */
 exports.register = async (req, res) => {
-  console.log(req.body);
   try {
     const {
       fullName,
@@ -99,7 +99,100 @@ exports.register = async (req, res) => {
     });
 
     await user.save();
-
+    await sendEmail({
+      from: "Jhapa <jhapalisamaj@gmail.com>",
+      to: email,
+      subject: "My first system email",
+      html: `<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7fc;
+      }
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .logo img {
+        width: 200px;
+        height: auto;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .banner {
+        background-color: #f97316; /* Orange-400 */
+        text-align: center;
+        padding: 15px 0;
+        color: white;
+        border-radius: 8px 8px 0 0;
+      }
+      .header h1 {
+        font-size: 36px;
+        margin: 0;
+      }
+      .message {
+        font-size: 18px;
+        color: #333;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .highlight {
+        color: #16a34a; /* Green-700 */
+        font-weight: bold;
+      }
+      .footer {
+        text-align: center;
+        font-size: 14px;
+        color: #777;
+        margin-top: 20px;
+      }
+      .footer a {
+        color: #f97316; /* Orange-400 */
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img src="https://jhapali.org/wp-content/uploads/2020/09/cropped-logo-5.png" alt="Logo">
+      </div>
+      <div class="banner">
+        <h1>Welcome to Jhapali Samaj!</h1>
+      </div>
+      <div class="message">
+        <p>Congratulations, your registration was successful!</p>
+        <p><strong>Username:</strong> <span class="highlight">${username}</span></p>
+        <p><strong>Email:</strong> <span class="highlight">${email}</span></p>
+        <p><strong>Password:</strong><span class="highlight">${password}</span></p>
+      </div>
+      <div class="footer">
+        <p>If you did not register, please contact support.</p>
+        <p><a href="https://example.com">Visit our website</a></p>
+      </div>
+    </div>
+  </body>
+</html>
+`,
+    });
     return res.status(201).json({
       message: "User registered successfully.",
       user: {

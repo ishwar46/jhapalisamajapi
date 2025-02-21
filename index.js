@@ -52,6 +52,8 @@ app.use("/api/onetime-donations", require("./routes/onetimeDonationRoutes"));
 app.use("/api/dmv-chapter", require("./routes/dmvChapterRoutes"));
 app.use("/api/texas-chapter", require("./routes/texasChapterRoutes"));
 app.use("/api/documents", require("./routes/documentRoutes"));
+app.use("/api/about-us", require("./routes/aboutUsRoutes"));
+app.use("/api/impact-summary", require("./routes/impactSummaryRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hello!! This is Jhapali Samaja USA");

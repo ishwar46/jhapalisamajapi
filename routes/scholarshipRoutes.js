@@ -9,11 +9,24 @@ router.get("/", scholarshipController.getScholarshipPage);
 
 // Admin-only endpoint to update Scholarship page details (with file uploads).
 router.put(
-    "/",
-    authMiddleware,
-    adminMiddleware,
-    scholarshipController.uploadScholarshipQRMiddleware,
-    scholarshipController.updateScholarshipPage
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  scholarshipController.uploadScholarshipQRMiddleware,
+  scholarshipController.updateScholarshipPage
+);
+router.post(
+  "/add-donation-methods",
+  authMiddleware,
+  adminMiddleware,
+  scholarshipController.uploadDonationImageMiddleware,
+  scholarshipController.addDonationOther
+);
+router.delete(
+  "/add-donation-methods/:itemId",
+  authMiddleware,
+  adminMiddleware,
+  scholarshipController.deleteDonationItem
 );
 
 module.exports = router;
