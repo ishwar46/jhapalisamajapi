@@ -54,6 +54,7 @@ app.use("/api/texas-chapter", require("./routes/texasChapterRoutes"));
 app.use("/api/documents", require("./routes/documentRoutes"));
 app.use("/api/about-us", require("./routes/aboutUsRoutes"));
 app.use("/api/impact-summary", require("./routes/impactSummaryRoutes"));
+app.use("/api/footer", require("./routes/footerRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hello!! This is Jhapali Samaja USA");

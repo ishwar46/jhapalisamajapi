@@ -108,6 +108,7 @@ exports.addStoryItem = async (req, res) => {
       await page.save();
     }
     let imagePath = "";
+    let imageName = "";
     if (req.file) {
       imagePath = req.file.path;
       imageName = req.file.filename;
