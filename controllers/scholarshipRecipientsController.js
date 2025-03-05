@@ -25,7 +25,7 @@ exports.getScholarshipRecipientsPage = async (req, res) => {
       "recipients.contributor",
       "fullName profilePicture email"
     );
-    console.log(page);
+
     if (!page) {
       // Create a default document if none exists
       page = new ScholarshipRecipientsPage({

@@ -1,5 +1,6 @@
 const BlogPage = require("../models/Blog");
 const createUploader = require("../middleware/uploader");
+const path = require("path");
 
 // Multer instance for blog images
 const blogUploader = createUploader("blogs").single("blogImage");
@@ -74,16 +75,14 @@ exports.addBlogItem = async (req, res) => {
       await page.save();
     }
 
-    let imagePath = "";
     let imageName = "";
     if (req.file) {
-      imagePath = req.file.path;
       imageName = req.file.filename;
     }
 
     page.blogs.push({
       title,
-      image: imageName,
+      blogImage: imageName,
       description: description || "",
       fullContent: fullContent || "",
       postedBy: postedBy || "Admin",
@@ -126,7 +125,7 @@ exports.updateBlogItem = async (req, res) => {
     if (postedBy !== undefined) item.postedBy = postedBy;
 
     if (req.file) {
-      item.image = req.file.path;
+      item.blogImage = path.basename(req.file.path);
     }
 
     await page.save();

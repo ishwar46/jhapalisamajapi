@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const programItemSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  image: { type: String, default: "" },
+  programImage: { type: String, default: "" },
   bullets: [{ type: String }],
   fullDescription: { type: String, default: "" },
   order: { type: Number, default: 0 },
