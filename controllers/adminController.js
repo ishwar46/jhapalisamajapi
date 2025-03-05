@@ -101,6 +101,19 @@ exports.verifyUser = async (req, res) => {
   }
 };
 
+exports.verifyAdmin = async (req, res) => {
+  try {
+    return res.status(200).json({
+      message: "User is an admin.",
+    });
+  } catch (error) {
+    console.error("Admin User Error:", error);
+    return res.status(500).json({
+      error: `Server error while getting user details: ${error.message}`,
+    });
+  }
+};
+
 exports.updateUser = async (req, res) => {
   try {
     const { userIdToEdit } = req.params;

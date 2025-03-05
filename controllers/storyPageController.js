@@ -1,6 +1,7 @@
 const StoryPage = require("../models/StoryPage");
 const createUploader = require("../middleware/uploader");
 const storyUploader = createUploader("stories").single("storyImage");
+const path = require("path");
 
 /**
  * Middleware to handle story image upload.
@@ -107,10 +108,9 @@ exports.addStoryItem = async (req, res) => {
       page = new StoryPage();
       await page.save();
     }
-    let imagePath = "";
+
     let imageName = "";
     if (req.file) {
-      imagePath = req.file.path;
       imageName = req.file.filename;
     }
     let parsedVids = [];
@@ -129,7 +129,7 @@ exports.addStoryItem = async (req, res) => {
       subtitle: subtitle || "",
       fullStory,
       postedAt: new Date(),
-      images: imageName ? [imageName] : [],
+      storyImage: imageName ? [imageName] : [],
       vids: parsedVids,
     };
     page.stories.push(newStory);
@@ -173,9 +173,9 @@ exports.updateStoryItem = async (req, res) => {
       }
     }
     if (req.file) {
-      // Replace images array with new file path (for a single image)
-      storyItem.images = [req.file.path];
+      storyItem.storyImage = path.basename(req.file.path);
     }
+
     await page.save();
     return res.status(200).json({
       message: "Story item updated successfully.",

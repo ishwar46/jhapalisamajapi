@@ -8,7 +8,7 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 router.get("/", aboutUsController.getAboutUsPage);
 
 // Admin-only: update page-level info
-router.post(
+router.patch(
   "/",
   authMiddleware,
   adminMiddleware,

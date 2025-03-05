@@ -122,6 +122,7 @@ exports.addImageToGallery = async (req, res) => {
 exports.updateGalleryImage = async (req, res) => {
   try {
     const { imageId } = req.params;
+    console.log("imageId:", req);
     let gallery = await Gallery.findOne();
     if (!gallery) {
       return res.status(404).json({ error: "No gallery found." });
@@ -139,7 +140,7 @@ exports.updateGalleryImage = async (req, res) => {
 
     // If a new file was uploaded, update path, size, dimensions
     if (req.file) {
-      imageItem.image = req.file.path;
+      imageItem.imageName = req.file.filename;
       imageItem.fileSize = req.file.size;
       const dimensions = sizeOf(req.file.path);
       imageItem.width = dimensions.width;

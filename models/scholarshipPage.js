@@ -77,10 +77,10 @@ const scholarshipPageSchema = new mongoose.Schema(
     },
     donationOthers: [
       {
-        _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, 
-        instructions: { type: String, required: true },
+        _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+        instructions: { type: String },
         qrImage: { type: String, default: "" },
-        donationType: { type: String, required: true },
+        donationType: { type: String },
       },
     ],
   },

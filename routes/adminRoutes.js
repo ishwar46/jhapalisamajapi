@@ -38,5 +38,10 @@ router.delete(
   adminMiddleware,
   adminController.deleteUser
 );
-
+router.get(
+  "/admin-verify",
+  authMiddleware,
+  adminMiddleware,
+  adminController.verifyAdmin
+);
 module.exports = router;

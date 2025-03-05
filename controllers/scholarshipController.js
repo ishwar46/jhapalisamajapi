@@ -148,7 +148,7 @@ exports.updateScholarshipPage = async (req, res) => {
       donationBank,
       donationOthers,
     } = req.body;
-
+    console.log(req);
     let page = await ScholarshipPage.findOne();
     if (!page) {
       page = new ScholarshipPage();
@@ -272,23 +272,23 @@ exports.updateScholarshipPage = async (req, res) => {
 
     // Process uploaded files (if any)
     if (req.files) {
-      if (req.files.donationCheckQR && req.files.donationCheckQR[0]) {
-        page.donationCheck.qrImage = req.files.donationCheckQR[0].path;
+      if (req.files.qrImage && req.files.qrImage[0]) {
+        page.donationCheck.qrImage = req.files.donationCheckQR[0].filename;
       }
       if (req.files.donationZelleQR && req.files.donationZelleQR[0]) {
-        page.donationZelle.qrImage = req.files.donationZelleQR[0].path;
+        page.donationZelle.qrImage = req.files.donationZelleQR[0].filename;
       }
       if (req.files.donationPaypalQR && req.files.donationPaypalQR[0]) {
-        page.donationPaypal.qrImage = req.files.donationPaypalQR[0].path;
+        page.donationPaypal.qrImage = req.files.donationPaypalQR[0].filename;
       }
       if (req.files.donationEsewaQR && req.files.donationEsewaQR[0]) {
-        page.donationEsewa.qrImage = req.files.donationEsewaQR[0].path;
+        page.donationEsewa.qrImage = req.files.donationEsewaQR[0].filename;
       }
       if (req.files.donationKhaltiQR && req.files.donationKhaltiQR[0]) {
-        page.donationKhalti.qrImage = req.files.donationKhaltiQR[0].path;
+        page.donationKhalti.qrImage = req.files.donationKhaltiQR[0].filename;
       }
       if (req.files.donationBankQR && req.files.donationBankQR[0]) {
-        page.donationBank.qrImage = req.files.donationBankQR[0].path;
+        page.donationBank.qrImage = req.files.donationBankQR[0].filename;
       }
     }
 

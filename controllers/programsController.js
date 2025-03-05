@@ -1,6 +1,7 @@
 const ProgramsPage = require("../models/programsPage");
 const createUploader = require("../middleware/uploader");
 const sizeOf = require("image-size");
+const path = require("path");
 
 // Multer instance for "programs" images, storing under /uploads/programs
 const programUploader = createUploader("programs").single("programImage");
@@ -65,7 +66,7 @@ exports.updateProgramsPage = async (req, res) => {
 /**
  * POST /api/programs/items
  * Admin only: Add a new program item (title, bullets, etc.).
- * If there's an image file, it's handled by Multer (uploadProgramImageMiddleware).
+ * If there's an programImage file, it's handled by Multer (uploadProgramImageMiddleware).
  */
 exports.addProgramItem = async (req, res) => {
   try {
@@ -96,7 +97,7 @@ exports.addProgramItem = async (req, res) => {
 
     page.programs.push({
       title,
-      image: imageName,
+      programImage: imageName,
       bullets: bulletArray,
       fullDescription: fullDescription || "",
       order: order || 0,
@@ -115,7 +116,7 @@ exports.addProgramItem = async (req, res) => {
 
 /**
  * PATCH /api/programs/items/:programId
- * Admin only: Update a specific program subdocument. Can also replace the image with a new upload.
+ * Admin only: Update a specific program subdocument. Can also replace the programImage with a new upload.
  */
 exports.updateProgramItem = async (req, res) => {
   try {
@@ -142,9 +143,9 @@ exports.updateProgramItem = async (req, res) => {
       programItem.bullets = Array.isArray(bullets) ? bullets : [bullets];
     }
 
-    // If a new image is uploaded
+    // If a new programImage is uploaded
     if (req.file) {
-      programItem.image = req.file.path;
+      programItem.programImage = path.basename(req.file.path);
     }
 
     await page.save();

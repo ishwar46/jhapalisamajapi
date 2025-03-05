@@ -1,6 +1,6 @@
 const TestimonialsPage = require("../models/testimonials");
 const createUploader = require("../middleware/uploader");
-
+const path = require("path");
 // Multer for "testimonials" images
 const testimonialUploader =
   createUploader("testimonials").single("testimonialImage");
@@ -67,7 +67,7 @@ exports.updateTestimonialsPage = async (req, res) => {
 /**
  * POST /api/testimonials/items
  * Admin only: Add a new testimonial item.
- * If there's an image, it's uploaded with Multer.
+ * If there's an programImage, it's uploaded with Multer.
  */
 exports.addTestimonialItem = async (req, res) => {
   try {
@@ -82,17 +82,15 @@ exports.addTestimonialItem = async (req, res) => {
       await page.save();
     }
 
-    let imagePath = "";
     let imageName = "";
     if (req.file) {
-      imagePath = req.file.path;
       imageName = req.file.filename;
     }
 
     page.testimonials.push({
       name,
       location: location || "",
-      image: imageName,
+      testimonialImage: imageName,
       rating: rating ? Number(rating) : 5,
       quote: quote || "",
     });
@@ -135,7 +133,7 @@ exports.updateTestimonialItem = async (req, res) => {
 
     // If new file uploaded
     if (req.file) {
-      item.image = req.file.path;
+      item.testimonialImage = path.basename(req.file.path);
     }
 
     await page.save();

@@ -8,7 +8,7 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 router.get("/", scholarshipController.getScholarshipPage);
 
 // Admin-only endpoint to update Scholarship page details (with file uploads).
-router.put(
+router.patch(
   "/",
   authMiddleware,
   adminMiddleware,
