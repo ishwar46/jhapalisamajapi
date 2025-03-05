@@ -76,7 +76,7 @@ exports.updateScholarshipRecipientsPage = async (req, res) => {
  * Expected form-data:
  *   - Text fields: studentName, district, school, grade, address, contributorName (optional)
  *   - Optionally, contributor (the user _id) if the contributor is a registered user.
- *   - File field: recipientImage (optional)
+ *   - File field: image (optional)
  */
 exports.addRecipientItem = async (req, res) => {
   try {
@@ -92,6 +92,7 @@ exports.addRecipientItem = async (req, res) => {
     if (!studentName) {
       return res.status(400).json({ error: "Student name is required." });
     }
+    console.log(req.body);
 
     let page = await ScholarshipRecipientsPage.findOne();
     if (!page) {
@@ -99,15 +100,15 @@ exports.addRecipientItem = async (req, res) => {
       await page.save();
     }
 
-    let imagePath = "";
+    let imageName = "";
+
     if (req.file) {
-      imagePath = req.file.path;
       imageName = req.file.filename;
     }
 
     page.recipients.push({
       studentName,
-      image: imageName,
+      recipientImage: imageName,
       district: district || "",
       school: school || "",
       grade: grade || "",
@@ -165,11 +166,12 @@ exports.updateRecipientItem = async (req, res) => {
     if (grade !== undefined) recipient.grade = grade;
     if (address !== undefined) recipient.address = address;
     if (contributor !== undefined) recipient.contributor = contributor;
+    if (recipientImage !== undefined) recipient.recipientImage = recipientImage;
     if (contributorName !== undefined)
       recipient.contributorName = contributorName;
 
     if (req.file) {
-      recipient.image = req.file.path;
+      recipient.recipientImage = req.file.filename;
     }
 
     await page.save();

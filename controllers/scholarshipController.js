@@ -3,7 +3,7 @@ const createUploader = require("../middleware/uploader");
 
 // Create an uploader for the scholarship page (QR codes will be stored under /uploads/scholarship)
 
-// Multer instance for blog images
+// Multer instance for qr images
 const donationUploader = createUploader("donationQR").single("qrImage");
 
 // Middleware wrapper for file uploads
@@ -22,7 +22,6 @@ const scholarshipUploader = createUploader("scholarship");
 // Middleware to handle multiple QR code file uploads.
 exports.uploadScholarshipQRMiddleware = (req, res, next) => {
   const upload = scholarshipUploader.fields([
-    { name: "donationCheckQR", maxCount: 1 },
     { name: "donationZelleQR", maxCount: 1 },
     { name: "donationPaypalQR", maxCount: 1 },
     { name: "donationEsewaQR", maxCount: 1 },
@@ -140,7 +139,6 @@ exports.updateScholarshipPage = async (req, res) => {
     const {
       pageTitle,
       pageDescription,
-      donationCheck,
       donationZelle,
       donationPaypal,
       donationEsewa,
@@ -148,7 +146,7 @@ exports.updateScholarshipPage = async (req, res) => {
       donationBank,
       donationOthers,
     } = req.body;
-    console.log(req);
+
     let page = await ScholarshipPage.findOne();
     if (!page) {
       page = new ScholarshipPage();
@@ -157,24 +155,6 @@ exports.updateScholarshipPage = async (req, res) => {
     if (pageTitle !== undefined) page.pageTitle = pageTitle;
     if (pageDescription !== undefined) page.pageDescription = pageDescription;
 
-    if (donationCheck !== undefined) {
-      const parsedDonationCheck =
-        typeof donationCheck === "string"
-          ? JSON.parse(donationCheck)
-          : donationCheck;
-      page.donationCheck = {
-        instructions:
-          parsedDonationCheck.instructions || page.donationCheck.instructions,
-        annualDonation:
-          parsedDonationCheck.annualDonation ||
-          page.donationCheck.annualDonation,
-        onetimeDonation:
-          parsedDonationCheck.onetimeDonation ||
-          page.donationCheck.onetimeDonation,
-        address: parsedDonationCheck.address || page.donationCheck.address,
-        qrImage: page.donationCheck.qrImage,
-      };
-    }
     if (donationZelle !== undefined) {
       const parsedDonationZelle =
         typeof donationZelle === "string"
@@ -272,9 +252,6 @@ exports.updateScholarshipPage = async (req, res) => {
 
     // Process uploaded files (if any)
     if (req.files) {
-      if (req.files.qrImage && req.files.qrImage[0]) {
-        page.donationCheck.qrImage = req.files.donationCheckQR[0].filename;
-      }
       if (req.files.donationZelleQR && req.files.donationZelleQR[0]) {
         page.donationZelle.qrImage = req.files.donationZelleQR[0].filename;
       }
