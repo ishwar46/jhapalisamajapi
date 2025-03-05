@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const isValidEmail = require("../utils/Validators");
 const { sendEmail } = require("../middleware/nodeMailer");
+const { welcomeEmail } = require('../utils/emailTemplates');
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
@@ -100,112 +101,10 @@ exports.register = async (req, res) => {
 
     await user.save();
     await sendEmail({
-      from: "Jhapa <jhapalisamaj@gmail.com>",
+      from: "ganjahanja1@gmail.com",
       to: email,
       subject: "Welcome to Jhapali Samaj!",
-      html: `
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Jhapali Samaj</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7fc;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    .header {
-      background-color: #f97316;
-      color: #ffffff;
-      text-align: center;
-      padding: 20px;
-    }
-    .header img {
-      width: 150px;
-      margin-bottom: 10px;
-    }
-    .body {
-      padding: 30px;
-      color: #333;
-      text-align: center;
-    }
-    .body h2 {
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-    .body p {
-      font-size: 16px;
-      line-height: 1.5;
-      margin: 10px 0;
-    }
-    .details p {
-      margin: 5px 0;
-    }
-    .highlight {
-      color: #16a34a;
-      font-weight: bold;
-    }
-    .button {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 12px 25px;
-      background-color: #16a34a;
-      color: #ffffff;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    .footer {
-      background-color: #f4f7fc;
-      text-align: center;
-      padding: 15px;
-      font-size: 14px;
-      color: #777;
-    }
-    .footer a {
-      color: #f97316;
-      text-decoration: none;
-    }
-    .footer a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <img src="https://jhapali.org/wp-content/uploads/2020/09/cropped-logo-5.png" alt="Jhapali Samaj Logo">
-      <h1>Welcome to Jhapali Samaj</h1>
-    </div>
-    <div class="body">
-      <h2>Hello ${username},</h2>
-      <p>Thank you for joining our community. We’re excited to have you on board!</p>
-      <div class="details">
-        <p><strong>Username:</strong> <span class="highlight">${username}</span></p>
-        <p><strong>Email:</strong> <span class="highlight">${email}</span></p>
-        <p><strong>Password:</strong> <span class="highlight">${password}</span></p>
-      </div>
-      <p>You can now log in and start exploring the amazing features of Jhapali Samaj.</p>
-      <a href="https://jhapali.org/login" class="button">Login to Your Account</a>
-    </div>
-    <div class="footer">
-      <p>If you did not sign up for this account, please ignore this email or contact our support team immediately.</p>
-      <p>Visit our <a href="https://jhapali.org">website</a> for more information.</p>
-    </div>
-  </div>
-</body>
-</html>
-`
+      html: welcomeEmail(username, email, password),
     });
 
     return res.status(201).json({
