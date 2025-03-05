@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const scholarshipRecipientSchema = new mongoose.Schema({
   studentName: { type: String, required: true },
-  image: { type: String, default: "" },
+  recipientImage: { type: String, default: "" },
   district: { type: String, default: "" },
   school: { type: String, default: "" },
   grade: { type: String, default: "" },
