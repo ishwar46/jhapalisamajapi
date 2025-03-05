@@ -12,7 +12,7 @@ const transporterInfo = {
 
 exports.sendEmail = async (mailInfo) => {
   try {
-    let transporter = nodemailer.createTransport(transporterInfo); //transporter gives from information
+    let transporter = nodemailer.createTransport(transporterInfo);
     let info = await transporter.sendMail(mailInfo);
 
   } catch (error) {

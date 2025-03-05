@@ -94,105 +94,120 @@ exports.register = async (req, res) => {
         typeof familyMembers === "string"
           ? JSON.parse(familyMembers) // If it's a string, parse it
           : Array.isArray(familyMembers)
-          ? familyMembers // Keep it as is if it's already an array
-          : Object.values(familyMembers) || [],
+            ? familyMembers // Keep it as is if it's already an array
+            : Object.values(familyMembers) || [],
     });
 
     await user.save();
     await sendEmail({
       from: "Jhapa <jhapalisamaj@gmail.com>",
       to: email,
-      subject: "My first system email",
-      html: `<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f7fc;
-      }
-      .container {
-        max-width: 600px;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-      }
-      .logo {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .logo img {
-        width: 200px;
-        height: auto;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-      }
-      .banner {
-        background-color: #f97316; /* Orange-400 */
-        text-align: center;
-        padding: 15px 0;
-        color: white;
-        border-radius: 8px 8px 0 0;
-      }
-      .header h1 {
-        font-size: 36px;
-        margin: 0;
-      }
-      .message {
-        font-size: 18px;
-        color: #333;
-        margin: 20px 0;
-        text-align: center;
-      }
-      .highlight {
-        color: #16a34a; /* Green-700 */
-        font-weight: bold;
-      }
-      .footer {
-        text-align: center;
-        font-size: 14px;
-        color: #777;
-        margin-top: 20px;
-      }
-      .footer a {
-        color: #f97316; /* Orange-400 */
-        text-decoration: none;
-      }
-      .footer a:hover {
-        text-decoration: underline;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="logo">
-        <img src="https://jhapali.org/wp-content/uploads/2020/09/cropped-logo-5.png" alt="Logo">
-      </div>
-      <div class="banner">
-        <h1>Welcome to Jhapali Samaj!</h1>
-      </div>
-      <div class="message">
-        <p>Congratulations, your registration was successful!</p>
+      subject: "Welcome to Jhapali Samaj!",
+      html: `
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Jhapali Samaj</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fc;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #f97316;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+    }
+    .header img {
+      width: 150px;
+      margin-bottom: 10px;
+    }
+    .body {
+      padding: 30px;
+      color: #333;
+      text-align: center;
+    }
+    .body h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .body p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 10px 0;
+    }
+    .details p {
+      margin: 5px 0;
+    }
+    .highlight {
+      color: #16a34a;
+      font-weight: bold;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 25px;
+      background-color: #16a34a;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .footer {
+      background-color: #f4f7fc;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: #777;
+    }
+    .footer a {
+      color: #f97316;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://jhapali.org/wp-content/uploads/2020/09/cropped-logo-5.png" alt="Jhapali Samaj Logo">
+      <h1>Welcome to Jhapali Samaj</h1>
+    </div>
+    <div class="body">
+      <h2>Hello ${username},</h2>
+      <p>Thank you for joining our community. We’re excited to have you on board!</p>
+      <div class="details">
         <p><strong>Username:</strong> <span class="highlight">${username}</span></p>
         <p><strong>Email:</strong> <span class="highlight">${email}</span></p>
-        <p><strong>Password:</strong><span class="highlight">${password}</span></p>
+        <p><strong>Password:</strong> <span class="highlight">${password}</span></p>
       </div>
-      <div class="footer">
-        <p>If you did not register, please contact support.</p>
-        <p><a href="https://example.com">Visit our website</a></p>
-      </div>
+      <p>You can now log in and start exploring the amazing features of Jhapali Samaj.</p>
+      <a href="https://jhapali.org/login" class="button">Login to Your Account</a>
     </div>
-  </body>
+    <div class="footer">
+      <p>If you did not sign up for this account, please ignore this email or contact our support team immediately.</p>
+      <p>Visit our <a href="https://jhapali.org">website</a> for more information.</p>
+    </div>
+  </div>
+</body>
 </html>
-`,
+`
     });
+
     return res.status(201).json({
       message: "User registered successfully.",
       user: {
