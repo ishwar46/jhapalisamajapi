@@ -1,4 +1,4 @@
-const StoryPage = require("../models/StoryPage");
+const StoryPage = require("../models/storyPageModel");
 const createUploader = require("../middleware/uploader");
 const storyUploader = createUploader("stories").single("storyImage");
 const path = require("path");

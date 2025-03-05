@@ -193,3 +193,22 @@ exports.deleteProgramItem = async (req, res) => {
       .json({ error: "Server error deleting program item." });
   }
 };
+
+exports.getProgramItem = async (req, res) => {
+  try {
+    const { programId } = req.params;
+    const page = await ProgramsPage.findOne();
+    if (!page) {
+      return res.status(404).json({ error: "Programs page not found." });
+    }
+    const programItem = page.programs.id(programId);
+    if (!programItem) {
+      return res.status(404).json({ error: "Program item not found." });
+    }
+    return res.status(200).json(programItem);
+  } catch (error) {
+    console.error("Error fetching program item:", error);
+    return res.status(500).json({ error: "Server error fetching program item." });
+  }
+};
+

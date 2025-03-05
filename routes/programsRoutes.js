@@ -30,4 +30,6 @@ router.delete('/items/:programId',
     programsController.deleteProgramItem
 );
 
+router.get('/items/:programId', programsController.getProgramItem);
+
 module.exports = router;

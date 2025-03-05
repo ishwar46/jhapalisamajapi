@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const storySchema = new mongoose.Schema({
   title: { type: String, required: true },
-  subtitle: { type: String, default: "" },
-  storyImage: [{ type: String, default: "" }],
+  subtitle: { type: String, default: "", },
+  storyImage: [{ type: String, default: "", }],
   vids: [
     {
       title: { type: String, required: true },
