@@ -8,10 +8,6 @@ const secondLinkSchema = new mongoose.Schema({
   title: { type: String, default: "" },
   link: { type: String, default: "" },
 });
-const bottomFooterLinks = new mongoose.Schema({
-  title: { type: String, default: "" },
-  link: { type: String, default: "" },
-});
 
 const footerSchema = new mongoose.Schema(
   {
@@ -19,7 +15,10 @@ const footerSchema = new mongoose.Schema(
     facebookLink: { type: String, default: "" },
     instagramLink: { type: String, default: "" },
     newsLetterCTA: { type: String, default: "JOIN OUR NEWS LETTER" },
-    newsLetterCTASubtitle: { type: String, default: "You need to our newsletter" },
+    newsLetterCTASubtitle: {
+      type: String,
+      default: "You need to our newsletter",
+    },
     bottomFooterCopyright: {
       type: String,
       default: "© Jhapali Samaj USA 2025. All Rights Reserved. ",
@@ -28,7 +27,6 @@ const footerSchema = new mongoose.Schema(
     firstLink: [firstLinkSchema],
     secondLinkTitle: { type: String, default: "" },
     secondLink: [secondLinkSchema],
-    bottomFooter: [bottomFooterLinks],
   },
   { timestamps: true }
 );

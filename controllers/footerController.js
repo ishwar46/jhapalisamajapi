@@ -117,9 +117,6 @@ exports.addToList = async (req, res) => {
       case "secondLink":
         page.secondLink.push(newList);
         break;
-      case "bottomFooter":
-        page.bottomFooter.push(newList);
-        break;
       default:
         return res.status(400).json({ error: "Invalid list type." });
     }
