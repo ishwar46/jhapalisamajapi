@@ -101,6 +101,11 @@ exports.verifyUser = async (req, res) => {
   }
 };
 
+/**
+ * User Authorization (Allow user to access admin dashboard)
+ * GET /api/admin/admin-verify
+ *
+ */
 exports.verifyAdmin = async (req, res) => {
   try {
     return res.status(200).json({
