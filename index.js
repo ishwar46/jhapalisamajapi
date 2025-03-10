@@ -55,6 +55,8 @@ app.use("/api/documents", require("./routes/documentRoutes"));
 app.use("/api/about-us", require("./routes/aboutUsRoutes"));
 app.use("/api/impact-summary", require("./routes/impactSummaryRoutes"));
 app.use("/api/footer", require("./routes/footerRoutes"));
+app.use("/api/president-message", require("./routes/presidentMessageRouter"));
+app.use("/api/settings", require("./routes/settingsRoute"));
 
 app.get("/", (req, res) => {
   res.send("Hello!! This is Jhapali Samaja USA");

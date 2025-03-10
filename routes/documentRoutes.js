@@ -8,32 +8,37 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 router.get("/", documentController.getDocumentPage);
 
 // Admin-only endpoint to update page-level info.
-router.put("/", authMiddleware, adminMiddleware, documentController.updateDocumentPage);
+router.put(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  documentController.updateDocumentPage
+);
 
 // Admin-only endpoint to add a new document item (with file upload).
 router.post(
-    "/items",
-    authMiddleware,
-    adminMiddleware,
-    documentController.uploadDocumentMiddleware,
-    documentController.addDocumentItem
+  "/items",
+  authMiddleware,
+  adminMiddleware,
+  documentController.uploadDocumentMiddleware,
+  documentController.addDocumentItem
 );
 
 // Admin-only endpoint to update an existing document item.
 router.patch(
-    "/items/:docId",
-    authMiddleware,
-    adminMiddleware,
-    documentController.uploadDocumentMiddleware,
-    documentController.updateDocumentItem
+  "/items/:docId",
+  authMiddleware,
+  adminMiddleware,
+  documentController.uploadDocumentMiddleware,
+  documentController.updateDocumentItem
 );
 
 // Admin-only endpoint to delete a document item.
 router.delete(
-    "/items/:docId",
-    authMiddleware,
-    adminMiddleware,
-    documentController.deleteDocumentItem
+  "/items/:docId",
+  authMiddleware,
+  adminMiddleware,
+  documentController.deleteDocumentItem
 );
 
 module.exports = router;
