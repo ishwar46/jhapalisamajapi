@@ -1,5 +1,5 @@
 const welcomeEmail = (username, email, password) => {
-    return `
+  return `
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -19,30 +19,25 @@ const welcomeEmail = (username, email, password) => {
       margin: 40px auto;
       background-color: #ffffff;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
       overflow: hidden;
     }
     .header {
       background-color: #f97316;
       padding: 30px;
       text-align: center;
-      color: #fff;
+      color: #ffffff;
+      border-radius: 8px 8px 0 0;
     }
     .header img {
       max-width: 100px;
       margin-bottom: 20px;
+      border-radius: 8px;
     }
     .header h1 {
       margin: 0;
       font-size: 28px;
       letter-spacing: 1px;
-    }
-    .hero {
-      width: 100%;
-      height: 200px;
-      background-image: url('https://jhapali.org/wp-content/uploads/2020/09/cropped-logo-5.png');
-      background-size: cover;
-      background-position: center;
     }
     .content {
       padding: 30px;
@@ -83,6 +78,10 @@ const welcomeEmail = (username, email, password) => {
       text-decoration: none;
       border-radius: 5px;
       font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #128333;
     }
     .features {
       margin: 20px 0;
@@ -97,6 +96,7 @@ const welcomeEmail = (username, email, password) => {
       margin-bottom: 15px;
       border-radius: 5px;
       text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     .feature h3 {
       font-size: 18px;
@@ -114,6 +114,7 @@ const welcomeEmail = (username, email, password) => {
       font-size: 14px;
       color: #777;
       border-top: 1px solid #ddd;
+      border-radius: 0 0 8px 8px;
     }
     .footer a {
       color: #f97316;
@@ -135,7 +136,6 @@ const welcomeEmail = (username, email, password) => {
       <img src="https://jhapali.org/wp-content/uploads/2020/09/cropped-logo-5.png" alt="Jhapali Samaj Logo">
       <h1>Welcome to Jhapali Samaj</h1>
     </div>
-    <div class="hero"></div>
     <div class="content">
       <h2>Hello ${username},</h2>
       <p>We're thrilled to have you join our vibrant community of like-minded individuals. At Jhapali Samaj, you'll find a platform designed to connect, share, and grow together.</p>
@@ -179,5 +179,5 @@ const welcomeEmail = (username, email, password) => {
 };
 
 module.exports = {
-    welcomeEmail,
+  welcomeEmail,
 };
