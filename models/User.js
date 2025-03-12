@@ -59,6 +59,8 @@ const userSchema = new mongoose.Schema(
         uploadedAt: { type: Date, default: Date.now },
       },
     ],
+    passwordResetToken: { type: String },
+    passwordResetExpires: { type: Date },
     accountLocked: { type: Boolean, default: false },
     loginAttempts: { type: Number, default: 0 },
     loginLogs: [
@@ -70,7 +72,7 @@ const userSchema = new mongoose.Schema(
     ],
     accountStatus: {
       type: String,
-      enum: ["pending", "active", "suspended", "deactivated", "rejected"],
+      enum: ["pending", "active", "deactivated", "rejected"],
       default: "pending",
     },
     accountExpiry: { type: Date, default: null },

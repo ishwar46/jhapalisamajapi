@@ -8,9 +8,29 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 router.get("/", executiveCommitteeController.getExecutiveCommitteePage);
 
 // Admin-only endpoints
-router.put("/", authMiddleware, adminMiddleware, executiveCommitteeController.updateExecutiveCommitteePage);
-router.post("/items", authMiddleware, adminMiddleware, executiveCommitteeController.addCommitteeMember);
-router.patch("/items/:memberId", authMiddleware, adminMiddleware, executiveCommitteeController.updateCommitteeMember);
-router.delete("/items/:memberId", authMiddleware, adminMiddleware, executiveCommitteeController.deleteCommitteeMember);
+router.patch(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  executiveCommitteeController.updateExecutiveCommitteePage
+);
+router.post(
+  "/items",
+  authMiddleware,
+  adminMiddleware,
+  executiveCommitteeController.addCommitteeMember
+);
+router.patch(
+  "/items/:memberId",
+  authMiddleware,
+  adminMiddleware,
+  executiveCommitteeController.updateCommitteeMember
+);
+router.delete(
+  "/items/:memberId",
+  authMiddleware,
+  adminMiddleware,
+  executiveCommitteeController.deleteCommitteeMember
+);
 
 module.exports = router;

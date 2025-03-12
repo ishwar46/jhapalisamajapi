@@ -3,7 +3,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const isValidEmail = require("../utils/Validators");
 const { sendEmail } = require("../middleware/nodeMailer");
-const { welcomeEmail } = require('../utils/emailTemplates');
+const {
+  welcomeEmail,
+  PasswordChangedEmail,
+} = require("../utils/emailTemplates");
+const generateString = require("../utils/RandomPass");
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
@@ -95,8 +99,8 @@ exports.register = async (req, res) => {
         typeof familyMembers === "string"
           ? JSON.parse(familyMembers) // If it's a string, parse it
           : Array.isArray(familyMembers)
-            ? familyMembers // Keep it as is if it's already an array
-            : Object.values(familyMembers) || [],
+          ? familyMembers // Keep it as is if it's already an array
+          : Object.values(familyMembers) || [],
     });
 
     await user.save();
@@ -301,5 +305,49 @@ exports.updateProfile = async (req, res) => {
     return res.status(500).json({
       error: "Server error while updating profile.",
     });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    // Find the user based on the token and expiration
+    const user = await User.findById({
+      _id,
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found!" });
+    }
+    const password = generateString(8).trim();
+
+    // Hash the new password and save it
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+
+    await user.save();
+    await sendEmail({
+      from: "ganjahanja1@gmail.com",
+      to: user.email,
+      subject: "Password Changed Successfully",
+      html: PasswordChangedEmail(user.username, user.email, password),
+    });
+    return res.status(200).json({
+      message: "Password updated successfully.",
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        email: user.email,
+        address: user.address,
+        contact: user.contact,
+        profession: user.profession,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return res
+      .status(500)
+      .json({ error: "Server error while updating password." });
   }
 };
