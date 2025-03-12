@@ -19,6 +19,10 @@ router.put(
 
 router.post("/login", userController.login);
 
+// forgot and reset password routes (public)
+router.post('/forgot-password', userController.forgotPassword);
+router.post('/reset-password', userController.resetPassword);
+
 // Protected route (any authenticated user)
 router.get("/profile", authMiddleware, userController.getProfile);
 router.patch("/update-profile", authMiddleware, userController.updateProfile);

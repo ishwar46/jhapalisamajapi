@@ -8,6 +8,9 @@ const {
   PasswordChangedEmail,
 } = require("../utils/emailTemplates");
 const generateString = require("../utils/RandomPass");
+const PasswordResetRequest = require("../models/PasswordResetRequest");
+const fs = require('fs');
+const path = require('path');
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
@@ -351,3 +354,109 @@ exports.updatePassword = async (req, res) => {
       .json({ error: "Server error while updating password." });
   }
 };
+
+// Forgot Password: Request a reset link
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required." });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(200).json({
+        message: "If a user with that email exists, a reset link has been sent."
+      });
+    }
+
+    // Generate a reset token (expires in 1 hour)
+    const resetToken = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    const resetLink = `https://jhapalisamajusa.vercel.app/reset-password/${resetToken}`;
+
+    const templatePath = path.join(__dirname, '../utils/forgotPasswordRequest.html');
+    let emailTemplate = fs.readFileSync(templatePath, 'utf-8');
+
+    emailTemplate = emailTemplate.replace('{{resetLink}}', resetLink);
+
+    const emailResult = await sendEmail({
+      from: "ganjahanja1@gmail.com",
+      to: email,
+      subject: "Password Reset Request - Jhapali Samaj USA",
+      html: emailTemplate
+    });
+
+    // Save the reset request in the database
+    const passwordResetRequest = new PasswordResetRequest({
+      userId: user._id,
+      email,
+      resetToken,
+      emailSent: true
+    });
+    await passwordResetRequest.save();
+
+    return res.status(200).json({
+      message: "If a user with that email exists, a reset link has been sent."
+    });
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    return res.status(500).json({ error: "Server error while processing request." });
+  }
+};
+
+// Reset Password: Update the user’s password
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: "Token and new password are required." });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters." });
+    }
+
+    // Check if the token exists in the PasswordResetRequest collection
+    const resetRequest = await PasswordResetRequest.findOne({ resetToken: token });
+    if (!resetRequest) {
+      return res.status(400).json({ error: "Invalid or expired token. Please request a new password reset link." });
+    }
+
+    // Verify the token and extract the userId
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Hash the new password and update the user record
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    // Remove the token so it cannot be reused
+    await PasswordResetRequest.deleteOne({ _id: resetRequest._id });
+
+    // Read the email template file
+    const templatePath = path.join(__dirname, '../utils/resetPasswordConfirmation.html');
+    let emailTemplate = fs.readFileSync(templatePath, 'utf-8');
+
+    emailTemplate = emailTemplate.replace('{{username}}', user.username || user.email);
+
+    // Send confirmation email
+    await sendEmail({
+      from: "ganjahanja1@gmail.com",
+      to: user.email,
+      subject: "Password Reset Confirmation",
+      html: emailTemplate,
+    });
+
+    return res.status(200).json({ message: "Password reset successfully." });
+  } catch (error) {
+    console.error("Reset Password Error:", error);
+    return res.status(500).json({ error: "Server error while resetting password." });
+  }
+};
+
+
+
