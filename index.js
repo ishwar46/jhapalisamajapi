@@ -4,8 +4,11 @@ const env = require("dotenv");
 const connectToDatabase = require("./database/db");
 const fs = require("fs");
 const path = require("path");
-
 const app = express();
+const webhookRoutes = require("./routes/webhookRoutes");
+const donationRoutes = require("./routes/donationRoutes");
+app.use("/webhook", webhookRoutes);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 env.config();
@@ -57,6 +60,7 @@ app.use("/api/impact-summary", require("./routes/impactSummaryRoutes"));
 app.use("/api/footer", require("./routes/footerRoutes"));
 app.use("/api/president-message", require("./routes/presidentMessageRouter"));
 app.use("/api/settings", require("./routes/settingsRoute"));
+app.use("/api", donationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello!! This is Jhapali Samaja USA");
