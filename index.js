@@ -5,12 +5,16 @@ const connectToDatabase = require("./database/db");
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const webhookRoutes = require("./routes/webhookRoutes");
+const donationRoutes = require("./routes/donationRoutes");
 const setupSocket = require("./utils/socket");
+
 const app = express();
 app.use(express.json());
+const server = http.createServer(app);
 app.use(express.urlencoded({ extended: true }));
 env.config();
-
+app.use("/webhook", webhookRoutes);
 connectToDatabase();
 
 const corsOptions = {
@@ -68,3 +72,7 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT ${PORT}`);
 });
+server.listen(5000, () => {
+  console.log(`Server is Running on PORT ${PORT}`);
+});
+setupSocket(server);

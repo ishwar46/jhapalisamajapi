@@ -15,6 +15,13 @@ const setupSocket = (server) => {
     socket.on("userJoined", (data) => {
       io.emit("userJoinedMessage", `${data.name} has joined`);
     });
+    socket.on("userDonation", (user) => {
+      io.emit(
+        "userDonationMessage",
+        `Thanks to ${user.name} for donating $${user.amount}`
+      );
+      console.log(`${user.name} has Donated ${user.amount}`);
+    });
 
     socket.on("disconnect", () => {
       console.log(`Socket ${socket.id} disconnected`);
