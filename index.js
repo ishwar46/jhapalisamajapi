@@ -9,26 +9,24 @@ const webhookRoutes = require("./routes/webhookRoutes");
 const donationRoutes = require("./routes/donationRoutes");
 const setupSocket = require("./utils/socket");
 
-const app = express();
-app.use(express.json());
-const server = http.createServer(app);
-app.use(express.urlencoded({ extended: true }));
 env.config();
+
+const app = express();
+
 app.use("/webhook", webhookRoutes);
-connectToDatabase();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
   origin: true,
   credentials: true,
   optionSuccessStatus: 200,
 };
-
 app.use(cors(corsOptions));
 
-// Serve static files from the uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-//Routes
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/uploads", require("./routes/uploadRoutes"));
@@ -43,15 +41,9 @@ app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/mission-story", require("./routes/missionStroryRoutes"));
 app.use("/api/stories", require("./routes/storyRoutes"));
 app.use("/api/scholarships", require("./routes/scholarshipRoutes"));
-app.use(
-  "/api/scholarship-recipients",
-  require("./routes/scholarshipRecipientsRoutes")
-);
+app.use("/api/scholarship-recipients", require("./routes/scholarshipRecipientsRoutes"));
 app.use("/api/hearse-vehicles", require("./routes/hearseVehicleRoutes"));
-app.use(
-  "/api/executive-committee",
-  require("./routes/executiveCommitteeRoutes")
-);
+app.use("/api/executive-committee", require("./routes/executiveCommitteeRoutes"));
 app.use("/api/annual-donations", require("./routes/annualDonationRoutes"));
 app.use("/api/onetime-donations", require("./routes/onetimeDonationRoutes"));
 app.use("/api/dmv-chapter", require("./routes/dmvChapterRoutes"));
@@ -62,17 +54,19 @@ app.use("/api/impact-summary", require("./routes/impactSummaryRoutes"));
 app.use("/api/footer", require("./routes/footerRoutes"));
 app.use("/api/president-message", require("./routes/presidentMessageRouter"));
 app.use("/api/settings", require("./routes/settingsRoute"));
+
 app.use("/api", donationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello!! This is Jhapali Samaja USA");
 });
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`Server is Running on PORT ${PORT}`);
+const PORT = process.env.PORT || 5500;
+const server = http.createServer(app);
+
+connectToDatabase().then(() => {
+  server.listen(PORT, () => {
+    console.log(`Server is Running on PORT ${PORT}`);
+  });
+  setupSocket(server);
 });
-server.listen(5000, () => {
-  console.log(`Server is Running on PORT ${PORT}`);
-});
-setupSocket(server);

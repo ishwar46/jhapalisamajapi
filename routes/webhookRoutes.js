@@ -23,26 +23,27 @@ router.post("/", express.raw({ type: "application/json" }), async (req, res) => 
         const { userId, remarks } = paymentIntent.metadata;
         const amountDonated = paymentIntent.amount_received / 100;
 
-        if (!paymentIntent.latest_charge) {
+        if (!paymentIntent.charges || !paymentIntent.charges.data || paymentIntent.charges.data.length === 0) {
             paymentIntent = await stripe.paymentIntents.retrieve(paymentIntent.id, {
-                expand: ["latest_charge"]
+                expand: ["charges"]
             });
         }
 
+
         let cardBrand = "";
         let cardLast4 = "";
-        if (
-            paymentIntent.latest_charge &&
-            paymentIntent.latest_charge.payment_method_details &&
-            paymentIntent.latest_charge.payment_method_details.card
-        ) {
-            const card = paymentIntent.latest_charge.payment_method_details.card;
-            cardBrand = card.brand;
-            cardLast4 = card.last4;
-            console.log("Card details:", card);
+        if (paymentIntent.charges && paymentIntent.charges.data.length > 0) {
+            const charge = paymentIntent.charges.data[0];
+            if (charge.payment_method_details && charge.payment_method_details.card) {
+                const card = charge.payment_method_details.card;
+                cardBrand = card.brand;
+                cardLast4 = card.last4;
+                console.log("Card details:", card);
+            }
         } else {
-            console.log("No card details found in latest_charge.");
+            console.log("No card details found in charges.");
         }
+
 
         try {
             await User.findByIdAndUpdate(userId, {
