@@ -6,9 +6,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const setupSocket = require("./utils/socket");
-
 const app = express();
-const server = http.createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 env.config();
@@ -60,6 +58,7 @@ app.use("/api/impact-summary", require("./routes/impactSummaryRoutes"));
 app.use("/api/footer", require("./routes/footerRoutes"));
 app.use("/api/president-message", require("./routes/presidentMessageRouter"));
 app.use("/api/settings", require("./routes/settingsRoute"));
+app.use("/api", donationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello!! This is Jhapali Samaja USA");
@@ -69,7 +68,3 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT ${PORT}`);
 });
-server.listen(5000, () => {
-  console.log(`Socket is Running on PORT 5000`);
-});
-setupSocket(server);
