@@ -1,6 +1,5 @@
 const welcomeEmail = (username, email, password) => {
   return `
-  return `
 <html lang="en">
 <head>
   <meta charset="UTF-8">
