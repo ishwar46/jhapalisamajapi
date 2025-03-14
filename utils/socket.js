@@ -15,11 +15,16 @@ const setupSocket = (server) => {
     socket.on("userJoined", (data) => {
       io.emit("userJoinedMessage", `${data.name} has joined`);
     });
+
     socket.on("userDonation", (user) => {
-      io.emit(
+      // Send a message to the sender
+
+      // Broadcast to all other users (excluding sender)
+      socket.broadcast.emit(
         "userDonationMessage",
         `Thanks to ${user.name} for donating $${user.amount}`
       );
+
       console.log(`${user.name} has Donated ${user.amount}`);
     });
 
