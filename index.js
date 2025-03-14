@@ -2,10 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const env = require("dotenv");
 const connectToDatabase = require("./database/db");
+const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const setupSocket = require("./utils/socket");
 
 const app = express();
+const server = http.createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 env.config();
@@ -66,3 +69,7 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is Running on PORT ${PORT}`);
 });
+server.listen(5000, () => {
+  console.log(`Socket is Running on PORT 5000`);
+});
+setupSocket(server);
