@@ -20,18 +20,22 @@ router.post("/", express.raw({ type: "application/json" }), async (req, res) => 
 
     if (event.type === "payment_intent.succeeded") {
         let paymentIntent = event.data.object;
-        const { userId, guestName, guestEmail, remarks } = paymentIntent.metadata;
+        const { userId, remarks } = paymentIntent.metadata;
         const amountDonated = paymentIntent.amount_received / 100;
 
         if (!paymentIntent.latest_charge) {
             paymentIntent = await stripe.paymentIntents.retrieve(paymentIntent.id, {
-                expand: ["latest_charge"],
+                expand: ["latest_charge"]
             });
         }
 
         let cardBrand = "";
         let cardLast4 = "";
-        if (paymentIntent.latest_charge && paymentIntent.latest_charge.payment_method_details && paymentIntent.latest_charge.payment_method_details.card) {
+        if (
+            paymentIntent.latest_charge &&
+            paymentIntent.latest_charge.payment_method_details &&
+            paymentIntent.latest_charge.payment_method_details.card
+        ) {
             const card = paymentIntent.latest_charge.payment_method_details.card;
             cardBrand = card.brand;
             cardLast4 = card.last4;
@@ -40,65 +44,43 @@ router.post("/", express.raw({ type: "application/json" }), async (req, res) => 
             console.log("No card details found in latest_charge.");
         }
 
-        // For members, update user donation totals; for guests, skip this step.
-        if (userId) {
-            try {
-                await User.findByIdAndUpdate(userId, {
-                    $inc: { donatedAmount: amountDonated },
-                    $push: {
-                        receipts: {
-                            fileName: `Stripe_${paymentIntent.id}`,
-                            filePath: `/receipts/${paymentIntent.id}.pdf`,
-                            uploadedAt: new Date(),
-                            remarks: remarks || "",
-                        },
+        try {
+            await User.findByIdAndUpdate(userId, {
+                $inc: { donatedAmount: amountDonated },
+                $push: {
+                    receipts: {
+                        fileName: `Stripe_${paymentIntent.id}`,
+                        filePath: `/receipts/${paymentIntent.id}.pdf`,
+                        uploadedAt: new Date(),
+                        remarks: remarks || "",
                     },
-                });
-                console.log("User document updated with new donation");
-            } catch (err) {
-                console.error("Error updating user after donation:", err);
-            }
+                },
+            });
+            console.log("User document updated with new donation");
+        } catch (err) {
+            console.error("Error updating user after donation:", err);
         }
 
-        // Create a donation record for all donations (members and guests)
         try {
             const donationRecord = await Donation.create({
-                // For members, userId will be set; for guests, leave it null.
-                userId: userId || null,
+                userId,
                 amount: amountDonated,
                 remarks,
                 paymentIntentId: paymentIntent.id,
                 cardBrand,
                 cardLast4,
-                // Save guest details if provided.
-                guestName: guestName || "",
-                guestEmail: guestEmail || "",
             });
             console.log("Donation record created:", donationRecord);
         } catch (err) {
             console.error("Error creating donation record:", err);
         }
 
-        // Send a donation receipt email. For members, use user email; for guests, use guestEmail.
         try {
-            // Determine email recipient and donor name
-            let recipientEmail = "";
-            let donorName = "";
-            if (userId) {
-                const user = await User.findById(userId);
-                if (user && user.email) {
-                    recipientEmail = user.email;
-                    donorName = user.fullName;
-                }
-            } else {
-                recipientEmail = guestEmail;
-                donorName = guestName || "Donor";
-            }
-
-            if (recipientEmail) {
+            const user = await User.findById(userId);
+            if (user && user.email) {
                 const templatePath = path.join(__dirname, "../utils/donationReceiptEmail.html");
                 let emailTemplate = fs.readFileSync(templatePath, "utf-8");
-                emailTemplate = emailTemplate.replace("{{fullName}}", donorName);
+                emailTemplate = emailTemplate.replace("{{fullName}}", user.fullName);
                 emailTemplate = emailTemplate.replace("{{donationAmount}}", amountDonated.toFixed(2));
                 emailTemplate = emailTemplate.replace("{{paymentIntentId}}", paymentIntent.id);
                 emailTemplate = emailTemplate.replace("{{date}}", new Date().toLocaleDateString());
@@ -108,11 +90,11 @@ router.post("/", express.raw({ type: "application/json" }), async (req, res) => 
 
                 await sendEmail({
                     from: "ganjahanja1@gmail.com",
-                    to: recipientEmail,
+                    to: user.email,
                     subject: "Donation Receipt - Jhapali Samaj USA",
                     html: emailTemplate,
                 });
-                console.log("Donation receipt email sent to", recipientEmail);
+                console.log("Donation receipt email sent to", user.email);
             }
         } catch (err) {
             console.error("Error sending donation receipt email:", err);
@@ -134,9 +116,11 @@ router.post("/", express.raw({ type: "application/json" }), async (req, res) => 
             console.error("Error retrieving PaymentIntent for refund:", error);
         }
 
+
         const userId = paymentIntent && paymentIntent.metadata && paymentIntent.metadata.userId;
         if (userId) {
             try {
+                // Subtract the refunded amount from the user's donatedAmount field
                 await User.findByIdAndUpdate(userId, { $inc: { donatedAmount: -refundedAmount } });
                 console.log(`User ${userId} donatedAmount reduced by $${refundedAmount}`);
             } catch (err) {
