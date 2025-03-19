@@ -54,11 +54,19 @@ const userSchema = new mongoose.Schema(
     donatedAmount: { type: Number, default: 0 },
     receipts: [
       {
+        receiptNumber: { type: String, unique: true },
         fileName: String,
         filePath: String,
         uploadedAt: { type: Date, default: Date.now },
       },
     ],
+    membershipReceipt: {
+      fileName: String,
+      filePath: String,
+      uploadedAt: { type: Date, default: Date.now },
+    },
+    statusReason: { type: String },
+
     passwordResetToken: { type: String },
     passwordResetExpires: { type: Date },
     accountLocked: { type: Boolean, default: false },
@@ -72,7 +80,13 @@ const userSchema = new mongoose.Schema(
     ],
     accountStatus: {
       type: String,
-      enum: ["pending", "active", "deactivated", "rejected"],
+      enum: [
+        "pending",
+        "active",
+        "deactivated",
+        "rejected",
+        "pendingVerification",
+      ],
       default: "pending",
     },
     accountExpiry: { type: Date, default: null },

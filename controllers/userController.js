@@ -108,7 +108,7 @@ exports.register = async (req, res) => {
 
     await user.save();
     await sendEmail({
-      from: "ganjahanja1@gmail.com",
+      from: "jhapalisamaj@gmail.com",
       to: email,
       subject: "Welcome to Jhapali Samaj!",
       html: welcomeEmail(username, email, password),
@@ -330,7 +330,7 @@ exports.updatePassword = async (req, res) => {
 
     await user.save();
     await sendEmail({
-      from: "ganjahanja1@gmail.com",
+      from: "jhapalisamaj@gmail.com",
       to: user.email,
       subject: "Password Changed Successfully",
       html: PasswordChangedEmail(user.username, user.email, password),
@@ -386,7 +386,7 @@ exports.forgotPassword = async (req, res) => {
     emailTemplate = emailTemplate.replace("{{resetLink}}", resetLink);
 
     const emailResult = await sendEmail({
-      from: "ganjahanja1@gmail.com",
+      from: "jhapalisamaj@gmail.com",
       to: email,
       subject: "Password Reset Request - Jhapali Samaj USA",
       html: emailTemplate,
@@ -433,12 +433,10 @@ exports.resetPassword = async (req, res) => {
       resetToken: token,
     });
     if (!resetRequest) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Invalid or expired token. Please request a new password reset link.",
-        });
+      return res.status(400).json({
+        error:
+          "Invalid or expired token. Please request a new password reset link.",
+      });
     }
 
     // Verify the token and extract the userId
@@ -470,7 +468,7 @@ exports.resetPassword = async (req, res) => {
 
     // Send confirmation email
     await sendEmail({
-      from: "ganjahanja1@gmail.com",
+      from: "jhapalisamaj@gmail.com",
       to: user.email,
       subject: "Password Reset Confirmation",
       html: emailTemplate,
@@ -482,5 +480,38 @@ exports.resetPassword = async (req, res) => {
     return res
       .status(500)
       .json({ error: "Server error while resetting password." });
+  }
+};
+
+/**
+ * Delete a receipt
+ * DELETE /api/admin/delete/:receiptId
+
+ */
+exports.deleteReceipt = async (req, res) => {
+  try {
+    const { userId } = req.body; // ID of the user to delete to delete receipt from
+    const { receiptId } = req.params; // Id of receipt to delete
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({ error: "user not found." });
+    }
+
+    const receipt = user.receipts.id(receiptId);
+    if (!receipt) {
+      return res.status(404).json({ error: "receipt not found." });
+    }
+
+    await receipt.deleteOne();
+    await user.save();
+
+    return res.status(200).json({
+      message: `receipt has been deleted.`,
+    });
+  } catch (error) {
+    console.error("DeleteUser Error:", error);
+    return res.status(500).json({ error: "Server error while deleting user." });
   }
 };
