@@ -5,8 +5,8 @@ const transporterInfo = {
   port: 587,
   secure: false,
   auth: {
-    user: "ganjahanja1@gmail.com",
-    pass: "sqjwnsbjwhinuogq",
+    user: "binodtharu0295@gmail.com",
+    pass: "hbkr abil raqb omtx",
   },
 };
 
@@ -14,7 +14,6 @@ exports.sendEmail = async (mailInfo) => {
   try {
     let transporter = nodemailer.createTransport(transporterInfo);
     let info = await transporter.sendMail(mailInfo);
-
   } catch (error) {
     console.log("error has occurred", error.message);
   }

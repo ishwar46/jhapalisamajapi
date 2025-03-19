@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const DeletedUser = require("../models/deletedUser.model");
+const getNextReceiptNumber = require("../utils/getNextReceiptNumber");
 
 /**
  * Promote or demote a user to admin.
@@ -43,7 +44,14 @@ exports.promoteUser = async (req, res) => {
  */
 exports.verifyUser = async (req, res) => {
   try {
-    const { userId, newStatus, membershipPaid, setExpiryInDays } = req.body;
+    const {
+      userId,
+      newStatus,
+      statusReason,
+      membershipFee,
+      membershipPaid,
+      setExpiryInDays,
+    } = req.body;
 
     if (!userId || !newStatus) {
       return res.status(400).json({
@@ -64,6 +72,36 @@ exports.verifyUser = async (req, res) => {
 
     // Update status
     user.accountStatus = newStatus;
+    if (newStatus === "rejected") {
+      user.membershipReceipt = null;
+      user.statusReason = statusReason;
+      user.membershipFee = 0; //save membership fee
+      user.membershipPaid = false;
+    }
+    if (newStatus === "deactivated") {
+      user.statusReason = statusReason;
+      user.membershipFee = 0; //save membership fee
+      user.membershipPaid = false;
+    }
+    if (newStatus === "active") {
+      user.membershipFee = membershipFee; //save membership fee
+      user.membershipPaid = true;
+      user.statusReason = null;
+
+      if (user.membershipReceipt.fileName) {
+        const Counter = (await getNextReceiptNumber())
+          .toString()
+          .padStart(4, "0");
+
+        user.receipts.push({
+          receiptNumber: "#JHA-" + Counter,
+          fileName: user.membershipReceipt.fileName,
+          filePath: user.membershipReceipt.filePath,
+          uploadedAt: new Date(),
+        });
+        user.membershipReceipt = null;
+      }
+    }
 
     // If membershipPaid is provided, update
     if (typeof membershipPaid !== "undefined") {
@@ -136,7 +174,7 @@ exports.updateUser = async (req, res) => {
       spouse,
       familyMembers,
     } = req.body;
-    console.log(familyMembers);
+
     if (!userIdToEdit) {
       return res.status(400).json({ error: "No user ID specified." });
     }
