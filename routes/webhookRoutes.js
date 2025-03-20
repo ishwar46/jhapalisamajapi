@@ -89,7 +89,7 @@ router.post("/", express.raw({ type: "application/json" }), async (req, res) => 
                 emailTemplate = emailTemplate.replace("{{cardLast4}}", cardLast4 || "****");
 
                 await sendEmail({
-                    from: "ganjahanja1@gmail.com",
+                    from: "jhapalisamaj@gmail.com",
                     to: user.email,
                     subject: "Donation Receipt - Jhapali Samaj USA",
                     html: emailTemplate,
