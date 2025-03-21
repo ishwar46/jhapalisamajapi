@@ -13,6 +13,7 @@ const roleHierarchy = {
   "Media Coordinator and Spokesperson": 10,
   "SC Coordinator": 11,
   "Executive Member": 12,
+  "Immediate Past President": 13,
 };
 
 /**
