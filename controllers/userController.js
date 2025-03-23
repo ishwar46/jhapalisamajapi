@@ -515,3 +515,40 @@ exports.deleteReceipt = async (req, res) => {
     return res.status(500).json({ error: "Server error while deleting user." });
   }
 };
+
+exports.sendIdCardEmail = async (req, res) => {
+  const { image, fullName, email } = req.body;
+
+  if (!image || !email)
+    return res.status(400).json({ success: false, message: "Missing data" });
+
+  try {
+    const base64Data = image.replace(/^data:image\/png;base64,/, "");
+
+    const filename = `${fullName.replace(/\s+/g, "_")}_IDCard.png`;
+    const filePath = path.join(__dirname, filename);
+
+    // Save the image temporarily
+    fs.writeFileSync(filePath, base64Data, "base64");
+    await sendEmail({
+      from: "jhapalisamaj@gmail.com",
+      to: email,
+      subject: "Your ID Card",
+      text: `Dear ${fullName},\n\nAttached is your membership ID Card.`,
+      attachments: [
+        {
+          filename,
+          path: filePath,
+        },
+      ],
+    });
+
+    // Delete temp file
+    fs.unlinkSync(filePath);
+
+    res.json({ success: true, message: "Email sent with ID Card" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Error sending email" });
+  }
+};

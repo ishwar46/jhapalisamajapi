@@ -15,7 +15,7 @@ const app = express();
 
 app.use("/webhook", webhookRoutes);
 
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
@@ -41,9 +41,15 @@ app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/mission-story", require("./routes/missionStroryRoutes"));
 app.use("/api/stories", require("./routes/storyRoutes"));
 app.use("/api/scholarships", require("./routes/scholarshipRoutes"));
-app.use("/api/scholarship-recipients", require("./routes/scholarshipRecipientsRoutes"));
+app.use(
+  "/api/scholarship-recipients",
+  require("./routes/scholarshipRecipientsRoutes")
+);
 app.use("/api/hearse-vehicles", require("./routes/hearseVehicleRoutes"));
-app.use("/api/executive-committee", require("./routes/executiveCommitteeRoutes"));
+app.use(
+  "/api/executive-committee",
+  require("./routes/executiveCommitteeRoutes")
+);
 app.use("/api/annual-donations", require("./routes/annualDonationRoutes"));
 app.use("/api/onetime-donations", require("./routes/onetimeDonationRoutes"));
 app.use("/api/dmv-chapter", require("./routes/dmvChapterRoutes"));
@@ -54,6 +60,8 @@ app.use("/api/impact-summary", require("./routes/impactSummaryRoutes"));
 app.use("/api/footer", require("./routes/footerRoutes"));
 app.use("/api/president-message", require("./routes/presidentMessageRouter"));
 app.use("/api/settings", require("./routes/settingsRoute"));
+app.use("/api/news-letter", require("./routes/newsLetterRoutes"));
+app.use("/api/notices", require("./routes/noticeRoutes"));
 
 app.use("/api", donationRoutes);
 
