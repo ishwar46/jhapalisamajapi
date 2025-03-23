@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
   origin: true,
   origin: ["https://jhapali.org", "https://www.jhapali.org"],
-  // credentials: true,
+  credentials: true,
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
