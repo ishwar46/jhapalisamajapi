@@ -19,7 +19,8 @@ app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-  origin: ["https://jhapali.org", "https://www.jhapali.orgs", "http://localhost", "http://localhost:5173"],
+  // origin: true,
+  origin: ["https://jhapali.org", "https://www.jhapali.orgs"],
   credentials: true,
   optionSuccessStatus: 200,
 };
