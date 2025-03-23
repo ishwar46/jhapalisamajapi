@@ -5,8 +5,8 @@ const transporterInfo = {
   port: 587,
   secure: false,
   auth: {
-    user: "binodtharu0295@gmail.com",
-    pass: "hbkr abil raqb omtx",
+    user: "infojhapaliusa@gmail.com",
+    pass: "owjt yhno ufyp fsjh",
   },
 };
 

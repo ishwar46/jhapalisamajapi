@@ -375,7 +375,7 @@ exports.forgotPassword = async (req, res) => {
     const resetToken = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "1h",
     });
-    const resetLink = `https://jhapalisamajusa.vercel.app/reset-password/${resetToken}`;
+    const resetLink = `https://jhapali.org/reset-password/${resetToken}`;
 
     const templatePath = path.join(
       __dirname,
