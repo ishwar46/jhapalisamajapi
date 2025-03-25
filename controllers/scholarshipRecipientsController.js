@@ -1,5 +1,7 @@
 const ScholarshipRecipientsPage = require("../models/scholarshipRecipientsPage");
 const createUploader = require("../middleware/uploader");
+const User = require("../models/User");
+const { default: mongoose } = require("mongoose");
 const recipientUploader = createUploader("recipients").single("recipientImage");
 
 /**
@@ -82,10 +84,18 @@ exports.addRecipientItem = async (req, res) => {
   try {
     const {
       studentName,
-      district,
-      school,
       grade,
       address,
+      father,
+      mother,
+      familySize,
+      schoolNameAndAddress,
+      schoolContactPerson,
+      schoolContactNumber,
+      firstInstallment,
+      classPosition,
+      contact,
+      remarks,
       contributor,
       contributorName,
     } = req.body;
@@ -109,12 +119,20 @@ exports.addRecipientItem = async (req, res) => {
     page.recipients.push({
       studentName,
       recipientImage: imageName,
-      district: district || "",
-      school: school || "",
       grade: grade || "",
       address: address || "",
       contributor: contributor || undefined,
       contributorName: contributorName || "",
+      contact: contact || "",
+      father: father || "",
+      mother: mother || "",
+      familySize: familySize || "",
+      schoolNameAndAddress: schoolNameAndAddress || "",
+      schoolContactPerson: schoolContactPerson || "",
+      schoolContactNumber: schoolContactNumber || "",
+      firstInstallment: firstInstallment || "",
+      classPosition: classPosition || "",
+      remarks: remarks || "",
     });
 
     await page.save();
@@ -140,10 +158,18 @@ exports.updateRecipientItem = async (req, res) => {
     const { recipientId } = req.params;
     const {
       studentName,
-      district,
-      school,
       grade,
       address,
+      father,
+      mother,
+      familySize,
+      schoolNameAndAddress,
+      schoolContactPerson,
+      schoolContactNumber,
+      firstInstallment,
+      classPosition,
+      remarks,
+      contact,
       contributor,
       contributorName,
     } = req.body;
@@ -161,14 +187,32 @@ exports.updateRecipientItem = async (req, res) => {
     }
 
     if (studentName !== undefined) recipient.studentName = studentName;
-    if (district !== undefined) recipient.district = district;
-    if (school !== undefined) recipient.school = school;
     if (grade !== undefined) recipient.grade = grade;
     if (address !== undefined) recipient.address = address;
-    if (contributor !== undefined) recipient.contributor = contributor;
-    if (recipientImage !== undefined) recipient.recipientImage = recipientImage;
-    if (contributorName !== undefined)
-      recipient.contributorName = contributorName;
+    if (father !== undefined) recipient.father = father;
+    if (mother !== undefined) recipient.mother = mother;
+    if (contact !== undefined) recipient.contact = contact;
+    if (familySize !== undefined) recipient.familySize = familySize;
+    if (schoolNameAndAddress !== undefined)
+      recipient.schoolNameAndAddress = schoolNameAndAddress;
+    if (schoolContactPerson !== undefined)
+      recipient.schoolContactPerson = schoolContactPerson;
+    if (schoolContactNumber !== undefined)
+      recipient.schoolContactNumber = schoolContactNumber;
+    if (firstInstallment !== undefined)
+      recipient.firstInstallment = firstInstallment;
+    if (classPosition !== undefined) recipient.classPosition = classPosition;
+    if (remarks !== undefined) recipient.remarks = remarks;
+    if (contributorName !== undefined) recipient.contributorName = contributorName;
+
+    // Only update contributor if it's a valid ObjectId and not an empty string
+    if (contributor && mongoose.Types.ObjectId.isValid(contributor)) {
+      const user = await User.findById(contributor);
+      if (user) {
+        recipient.contributor = contributor;
+        recipient.contributorName = user.fullName;
+      }
+    }
 
     if (req.file) {
       recipient.recipientImage = req.file.filename;
@@ -186,6 +230,7 @@ exports.updateRecipientItem = async (req, res) => {
       .json({ error: "Server error updating scholarship recipient." });
   }
 };
+
 
 /**
  * DELETE /api/scholarship-recipients/items/:recipientId
