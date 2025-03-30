@@ -377,7 +377,7 @@ const attendeeRegistrationEmail = (fullName) => {
                   </p>
 
                   <div style="background-color: #fdf4e7; border: 1px solid #fcd9b6; padding: 18px; border-radius: 10px; margin-bottom: 20px;">
-                    <p style="margin: 0;"><strong>🗓 Date:</strong> April 12 & 13, 2025</p>
+                    <p style="margin: 0;"><strong>🗓 Date:</strong> April 12, 2025</p>
                     <p style="margin: 0;"><strong>🕘 Time:</strong> 10:00 AM – 5:00 PM</p>
                     <p style="margin: 0;"><strong>📍 Venue:</strong> DoubleTree by Hilton McLean Tyson</p>
                     <p style="margin: 0;"><strong>📫 Address:</strong> 1960 Chain Bridge Rd, McLean VA, USA</p>
