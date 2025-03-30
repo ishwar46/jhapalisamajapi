@@ -18,8 +18,9 @@ const attendeeSchema = new mongoose.Schema({
   country: { type: String, trim: true },
   contact: { type: String, required: true, trim: true },
   verificationStatus: {
-    type: Boolean,
-    default: false,
+    type: String,
+    default: "pending",
+    enum: ["pending", "verified", "rejected"],
   },
   declineReason: {
     type: String,
@@ -33,9 +34,12 @@ const attendeePageSchema = new mongoose.Schema(
   {
     pageTitle: { type: String, default: "Register For The Event" },
     pageSubtitle: { type: String, default: "" },
+    eventStatus: { type: Boolean, default: true },
     eventDate: { type: Date, default: "" },
-    eventLocation: { type: String, default: "" },
+    eventAddress: { type: String, default: "" },
+    eventVenue: { type: String, default: "" },
     eventDescription: { type: String, default: "" },
+    buttonText: { type: String, default: "Register Now" },
     attendees: [attendeeSchema],
   },
   { timestamps: true }
