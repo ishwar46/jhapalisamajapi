@@ -23,7 +23,11 @@ router.post(
 );
 
 // Attendee registration
-router.post("/attendees", attendeeController.attendeeRegistration);
+router.post(
+  "/attendees",
+  attendeeController.uploadAttendeeReceiptMiddleware,
+  attendeeController.attendeeRegistration
+);
 
 // Admin-only: verify an existing attendee
 router.patch(

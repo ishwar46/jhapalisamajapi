@@ -28,6 +28,17 @@ const attendeeSchema = new mongoose.Schema({
       "Your registration did not meet the event criteria. Please review the requirements and try again",
   },
   spouse: { type: spouseSchema, default: null },
+  hasSpouseOrFamily: { type: Boolean, default: false },
+  familyCount: { type: Number, default: 0, max: 2 },
+
+  receipt: {
+    type: String,
+    default: "",
+  },
+  affiliation: {
+    type: String,
+    default: "",
+  },
 });
 
 const attendeePageSchema = new mongoose.Schema(
