@@ -349,37 +349,55 @@ const PasswordChangedEmail = (username, email, password) => {
 
             `;
 };
+
 const attendeeRegistrationEmail = (fullName) => {
   return `
   <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 2px dashed #f97316;">
-        <tr>
-            <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
-                Your Event Registration
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.5; text-align: center;">
-                <p>Dear ${fullName},</p>
-                <p>Thank you for registering! Your registration is currently under review by our team. We will notify you once your registration is confirmed.</p>
-                <p>We look forward to welcoming you to the event!</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="background-color: #f97316; padding: 10px; text-align: center; color: #ffffff; font-size: 14px;">
-                &copy; 2025 Jhapali Samaj USA Team. All rights reserved.
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Registration Confirmation</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body style="font-family: 'Inter', sans-serif; background-color: #f0f4f8; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+          <tr>
+              <td style="background-color: #f97316; padding: 24px; text-align: center; color: #ffffff; font-size: 22px; font-weight: 700;">
+                  🌸 अन्तर्राष्ट्रिय झापाली समाज - चौथो क्षेत्रीय भेला 🌸
+              </td>
+          </tr>
+          <tr>
+              <td style="padding: 28px 24px; color: #333333; font-size: 16px; line-height: 1.7;">
+                  <p style="margin-bottom: 16px;">Dear <strong>${fullName}</strong>,</p>
+
+                  <p style="margin-bottom: 20px;">
+                    Thank you for registering for the <strong>4th Regional Gathering of Antarashtriya Jhapali Samaj</strong>, hosted by <strong>Jhapali Samaj USA</strong>.
+                    Your registration is currently <strong>under review</strong>. We will notify you once your seat is confirmed.
+                  </p>
+
+                  <div style="background-color: #fdf4e7; border: 1px solid #fcd9b6; padding: 18px; border-radius: 10px; margin-bottom: 20px;">
+                    <p style="margin: 0;"><strong>🗓 Date:</strong> April 12 & 13, 2025</p>
+                    <p style="margin: 0;"><strong>🕘 Time:</strong> 10:00 AM – 5:00 PM</p>
+                    <p style="margin: 0;"><strong>📍 Venue:</strong> DoubleTree by Hilton McLean Tyson</p>
+                    <p style="margin: 0;"><strong>📫 Address:</strong> 1960 Chain Bridge Rd, McLean VA, USA</p>
+                  </div>
+
+                  <p style="margin-bottom: 28px;">
+                    We are truly excited to host you at this grand event, where the Jhapali community from across the globe comes together.
+                  </p>
+
+                  <p>Warm regards,<br /><strong>Jhapali Samaj USA Team</strong></p>
+              </td>
+          </tr>
+          <tr>
+              <td style="background-color: #f97316; padding: 16px; text-align: center; color: #ffffff; font-size: 13px;">
+                  &copy; 2025 Jhapali Samaj USA. All rights reserved.
+              </td>
+          </tr>
+      </table>
+  </body>
+  </html>
   `;
 };
 
@@ -428,50 +446,53 @@ const attendeeAcceptEmail = (
 ) => {
   return `
   <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Pass</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 2px dashed #f97316;">
-        <tr>
-            <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
-                Your Event Pass
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align: center; padding: 20px;">
-                 <img
-            src="https://api.qrserver.com/v1/create-qr-code/?data=${attendeeId}&size=150x150"
-            alt="QR Code"
-          />
-            </td>
-        </tr>
-        <tr>
-            <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.5; text-align: center;">
-                <p>Dear ${fullName},</p>
-                <p>Thank you for registering! This pass grants you access to the event.</p>
-                <p><strong>Event Details:</strong></p>
-                <p><strong>Date:</strong> ${eventDate}</p>
-                <p><strong>Location:</strong> ${eventLocation}</p>
-                <p><strong>Description:</strong> ${eventDescription}</p>
-                <p>We look forward to welcoming you!</p>
-            </td>
-        </tr>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Your Event Pass</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; border: 2px dashed #f97316;">
+          <tr>
+              <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
+                  🎟️ तपाईँको कार्यक्रम पास तयार छ!
+              </td>
+          </tr>
+          <tr>
+              <td style="text-align: center; padding: 25px;">
+                  <p style="font-size: 18px; color: #333333; font-weight: 600; margin-bottom: 10px;">Scan this QR at the entrance</p>
+                  <img
+                      src="https://api.qrserver.com/v1/create-qr-code/?data=${attendeeId}&size=160x160"
+                      alt="QR Code for Event Entry"
+                      style="border: 4px solid #f97316; border-radius: 8px;"
+                  />
+              </td>
+          </tr>
+          <tr>
+              <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.6; text-align: center;">
+                  <p>Dear ${fullName},</p>
+                  <p>Your registration has been <strong>approved</strong>! Below is your event pass.</p>
 
-        <tr>
-            <td style="background-color: #f97316; padding: 10px; text-align: center; color: #ffffff; font-size: 14px;">
-                &copy; 2025 Jhapali Samaj USA Team. All rights reserved.
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
+                  <p style="margin-top: 20px;"><strong>📅 Date:</strong> ${eventDate}</p>
+                  <p><strong>📍 Location:</strong> ${eventLocation}</p>
+                  <p><strong>📖 Description:</strong><br>${eventDescription}</p>
 
-        `;
+                  <p>We can’t wait to see you there and celebrate with the Jhapali community!</p>
+              </td>
+          </tr>
+          <tr>
+              <td style="background-color: #f97316; padding: 15px; text-align: center; color: #ffffff; font-size: 14px;">
+                  &copy; 2025 Jhapali Samaj USA. All rights reserved.
+              </td>
+          </tr>
+      </table>
+  </body>
+  </html>
+  `;
 };
+
+
 module.exports = {
   welcomeEmail,
   PasswordChangedEmail,
