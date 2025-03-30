@@ -139,33 +139,50 @@ exports.attendeeRegistration = async (req, res) => {
       country,
       contact,
       spouse,
-      affiliation,
+      membership,
+      otherAffiliation,
       hasSpouseOrFamily,
+      familyCount,
     } = req.body;
-    if (!fullName || !email || !contact) {
+
+    if (!fullName || !email || !contact || !membership) {
       return res.status(400).json({
-        error: "fullName, email, and contact are required.",
+        error: "fullName, email, contact, and membership are required.",
       });
     }
+
+    const familyCountNum = parseInt(familyCount || 0);
+    if (familyCountNum > 2) {
+      return res.status(400).json({
+        error: "Family count cannot exceed 2.",
+      });
+    }
+
     let page = await AttendeePage.findOne();
     if (!page) {
       page = new AttendeePage();
       await page.save();
     }
+
+    let receipt = "";
     if (req.file) {
       receipt = req.file.filename;
     }
 
-    page.attendees.push({
+    const attendeeData = {
       fullName,
       email,
       country,
       contact,
       receipt,
-      affiliation,
-      hasSpouseOrFamily,
-      spouse: spouse || null,
-    });
+      membership,
+      otherAffiliation: membership === "Other" ? otherAffiliation : "",
+      hasSpouseOrFamily: hasSpouseOrFamily === "true" || hasSpouseOrFamily === true,
+      familyCount: familyCountNum,
+      spouse: spouse ? JSON.parse(spouse) : null,
+    };
+
+    page.attendees.push(attendeeData);
     await page.save();
 
     await sendEmail({
@@ -176,16 +193,17 @@ exports.attendeeRegistration = async (req, res) => {
     });
 
     return res.status(201).json({
-      message: "Registration Successful.",
+      message:
+        "Registration completed successfully. Please check your email inbox or spam folder for further instructions.",
       page,
     });
   } catch (error) {
     console.error("registerAttendee Error:", error);
-    return res
-      .status(500)
-      .json({ error: "Server error registering attendee." });
+    return res.status(500).json({ error: "Server error registering attendee." });
   }
 };
+
+
 /**
  * PATCH /api/attendee-page/attendees/:attendeeId
  * Admin-only endpoint: Update an existing attendee.
@@ -231,7 +249,7 @@ exports.verifyAttendee = async (req, res) => {
         html: attendeeDeclineEmail(
           attendees.fullName,
           declineReason ||
-            "Your registration did not meet the event criteria. Please review the requirements and try again"
+          "Your registration did not meet the event criteria. Please review the requirements and try again"
         ),
       });
     }

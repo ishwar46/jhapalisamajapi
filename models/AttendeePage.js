@@ -35,10 +35,19 @@ const attendeeSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  affiliation: {
+  membership: {
+    type: String,
+    enum: [
+      "Jhapali Samaj USA",
+      "International Jhapali Samaj",
+      "Other"
+    ],
+  },
+  otherAffiliation: {
     type: String,
     default: "",
   },
+
 });
 
 const attendeePageSchema = new mongoose.Schema(
