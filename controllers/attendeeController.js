@@ -5,7 +5,21 @@ const {
   attendeeAcceptEmail,
   attendeeDeclineEmail,
 } = require("../utils/emailTemplates");
+const createUploader = require("../middleware/uploader");
+const path = require("path");
 
+// Multer instance for blog images
+const attendeeUploader = createUploader("attendeeReceipts").single("receipt");
+
+// Middleware wrapper for file uploads
+exports.uploadAttendeeReceiptMiddleware = (req, res, next) => {
+  attendeeUploader(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
+};
 /**
  * GET /api/attendee-page
  * Public endpoint: Retrieve the Attendee page details,
@@ -119,7 +133,15 @@ exports.updateAttendeePage = async (req, res) => {
  */
 exports.attendeeRegistration = async (req, res) => {
   try {
-    const { fullName, email, country, contact, spouse } = req.body;
+    const {
+      fullName,
+      email,
+      country,
+      contact,
+      spouse,
+      affiliation,
+      hasSpouseOrFamily,
+    } = req.body;
     if (!fullName || !email || !contact) {
       return res.status(400).json({
         error: "fullName, email, and contact are required.",
@@ -130,12 +152,19 @@ exports.attendeeRegistration = async (req, res) => {
       page = new AttendeePage();
       await page.save();
     }
+    if (req.file) {
+      receipt = req.file.filename;
+    }
+
     page.attendees.push({
       fullName,
       email,
       country,
       contact,
-      spouse: spouse || "",
+      receipt,
+      affiliation,
+      hasSpouseOrFamily,
+      spouse: spouse || null,
     });
     await page.save();
 
