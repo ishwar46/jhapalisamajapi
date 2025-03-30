@@ -349,8 +349,133 @@ const PasswordChangedEmail = (username, email, password) => {
 
             `;
 };
+const attendeeRegistrationEmail = (fullName) => {
+  return `
+  <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 2px dashed #f97316;">
+        <tr>
+            <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
+                Your Event Registration
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.5; text-align: center;">
+                <p>Dear ${fullName},</p>
+                <p>Thank you for registering! Your registration is currently under review by our team. We will notify you once your registration is confirmed.</p>
+                <p>We look forward to welcoming you to the event!</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="background-color: #f97316; padding: 10px; text-align: center; color: #ffffff; font-size: 14px;">
+                &copy; 2025 Jhapali Samaj USA Team. All rights reserved.
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+  `;
+};
 
+const attendeeDeclineEmail = (fullName, declineReason) => {
+  return `
+  <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration Status</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 2px dashed #f97316;">
+        <tr>
+            <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
+                Your Event Registration Status
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.5; text-align: center;">
+                <p>Dear ${fullName},</p>
+                <p>Unfortunately, your registration for the event has been declined due to the following reason:</p>
+                <p><strong>Reason for Decline:</strong> ${declineReason}</p>
+                <p>We apologize for any inconvenience caused and appreciate your understanding.</p>
+                <p>If you have any questions, feel free to reach out to us.</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="background-color: #f97316; padding: 10px; text-align: center; color: #ffffff; font-size: 14px;">
+                &copy; 2025 Jhapali Samaj USA Team. All rights reserved.
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+  `;
+};
+
+const attendeeAcceptEmail = (
+  fullName,
+  attendeeId,
+  eventDate,
+  eventLocation,
+  eventDescription
+) => {
+  return `
+  <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Pass</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 2px dashed #f97316;">
+        <tr>
+            <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
+                Your Event Pass
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; padding: 20px;">
+                 <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data=${attendeeId}&size=150x150"
+            alt="QR Code"
+          />
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.5; text-align: center;">
+                <p>Dear ${fullName},</p>
+                <p>Thank you for registering! This pass grants you access to the event.</p>
+                <p><strong>Event Details:</strong></p>
+                <p><strong>Date:</strong> ${eventDate}</p>
+                <p><strong>Location:</strong> ${eventLocation}</p>
+                <p><strong>Description:</strong> ${eventDescription}</p>
+                <p>We look forward to welcoming you!</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="background-color: #f97316; padding: 10px; text-align: center; color: #ffffff; font-size: 14px;">
+                &copy; 2025 Jhapali Samaj USA Team. All rights reserved.
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
+        `;
+};
 module.exports = {
   welcomeEmail,
   PasswordChangedEmail,
+  attendeeRegistrationEmail,
+  attendeeAcceptEmail,
+  attendeeDeclineEmail,
 };
