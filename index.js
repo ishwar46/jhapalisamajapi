@@ -19,8 +19,8 @@ app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-  // origin: true,
-  origin: ["https://jhapali.org", "https://www.jhapali.org"],
+  origin: true,
+  // origin: ["https://jhapali.org", "https://www.jhapali.org"],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -63,6 +63,7 @@ app.use("/api/president-message", require("./routes/presidentMessageRouter"));
 app.use("/api/settings", require("./routes/settingsRoute"));
 app.use("/api/news-letter", require("./routes/newsLetterRoutes"));
 app.use("/api/notices", require("./routes/noticeRoutes"));
+app.use("/api/attendeePage", require("./routes/attendeeRoutes"));
 
 app.use("/api", donationRoutes);
 
