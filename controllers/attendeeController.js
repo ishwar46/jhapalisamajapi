@@ -23,7 +23,11 @@ exports.getAttendeePage = async (req, res) => {
       pageTitle: page.pageTitle,
       pageSubtitle: page.pageSubtitle,
       eventDate: page.eventDate,
-      eventLocation: page.eventLocation,
+      eventStatus: page.eventStatus,
+      eventAddress: page.eventAddress,
+      eventVenue: page.eventVenue,
+      eventDescription: page.eventDescription,
+      buttonText: page.buttonText,
     });
   } catch (error) {
     console.error("getAttendeePage Error:", error);
@@ -65,8 +69,11 @@ exports.updateAttendeePage = async (req, res) => {
       pageTitle,
       pageSubtitle,
       eventDate,
-      eventLocation,
+      eventStatus,
+      eventAddress,
+      eventVenue,
       eventDescription,
+      buttonText,
     } = req.body;
     let page = await AttendeePage.findOne();
     if (!page) {
@@ -75,9 +82,13 @@ exports.updateAttendeePage = async (req, res) => {
     if (pageTitle !== undefined) page.pageTitle = pageTitle;
     if (pageSubtitle !== undefined) page.pageSubtitle = pageSubtitle;
     if (eventDate !== undefined) page.eventDate = eventDate;
-    if (eventLocation !== undefined) page.eventLocation = eventLocation;
+    if (eventVenue !== undefined) page.eventVenue = eventVenue;
     if (eventDescription !== undefined)
       page.eventDescription = eventDescription;
+    if (eventStatus !== undefined) page.eventStatus = eventStatus;
+    if (eventAddress !== undefined) page.eventAddress = eventAddress;
+    if (buttonText !== undefined) page.buttonText = buttonText;
+
     await page.save();
     return res.status(200).json({
       message: "Attendee page updated successfully.",
@@ -168,7 +179,7 @@ exports.verifyAttendee = async (req, res) => {
     if (declineReason !== undefined) attendees.declineReason = declineReason;
     if (verificationStatus) {
       const eventDate = page.eventDate;
-      const eventLocation = page.eventLocation;
+      const eventVenue = page.eventVenue;
       const eventDescription = page.eventDescription;
       attendees.declineReason = undefined;
       await sendEmail({
@@ -179,7 +190,7 @@ exports.verifyAttendee = async (req, res) => {
           attendees.fullName,
           attendeeId,
           eventDate,
-          eventLocation,
+          eventVenue,
           eventDescription
         ),
       });
