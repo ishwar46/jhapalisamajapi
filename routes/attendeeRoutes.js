@@ -41,6 +41,7 @@ router.patch(
   "/attendees/:attendeeId",
   authMiddleware,
   adminMiddleware,
+  attendeeController.uploadAttendeeReceiptMiddleware,
   attendeeController.updateAttendee
 );
 
