@@ -37,6 +37,7 @@ exports.getAttendeePage = async (req, res) => {
       pageTitle: page.pageTitle,
       pageSubtitle: page.pageSubtitle,
       eventDate: page.eventDate,
+      eventTime: page.eventTime,
       eventStatus: page.eventStatus,
       eventAddress: page.eventAddress,
       eventVenue: page.eventVenue,
@@ -83,6 +84,7 @@ exports.updateAttendeePage = async (req, res) => {
       pageTitle,
       pageSubtitle,
       eventDate,
+      eventTime,
       eventStatus,
       eventAddress,
       eventVenue,
@@ -96,6 +98,7 @@ exports.updateAttendeePage = async (req, res) => {
     if (pageTitle !== undefined) page.pageTitle = pageTitle;
     if (pageSubtitle !== undefined) page.pageSubtitle = pageSubtitle;
     if (eventDate !== undefined) page.eventDate = eventDate;
+    if (eventTime !== undefined) page.eventTime = eventTime;
     if (eventVenue !== undefined) page.eventVenue = eventVenue;
     if (eventDescription !== undefined)
       page.eventDescription = eventDescription;
@@ -177,7 +180,8 @@ exports.attendeeRegistration = async (req, res) => {
       receipt,
       membership,
       otherAffiliation: membership === "Other" ? otherAffiliation : "",
-      hasSpouseOrFamily: hasSpouseOrFamily === "true" || hasSpouseOrFamily === true,
+      hasSpouseOrFamily:
+        hasSpouseOrFamily === "true" || hasSpouseOrFamily === true,
       familyCount: familyCountNum,
       spouse: spouse ? JSON.parse(spouse) : null,
     };
@@ -199,10 +203,11 @@ exports.attendeeRegistration = async (req, res) => {
     });
   } catch (error) {
     console.error("registerAttendee Error:", error);
-    return res.status(500).json({ error: "Server error registering attendee." });
+    return res
+      .status(500)
+      .json({ error: "Server error registering attendee." });
   }
 };
-
 
 /**
  * PATCH /api/attendee-page/attendees/:attendeeId
@@ -224,22 +229,19 @@ exports.verifyAttendee = async (req, res) => {
     if (verificationStatus !== undefined)
       attendees.verificationStatus = verificationStatus;
     if (declineReason !== undefined) attendees.declineReason = declineReason;
-    if (verificationStatus) {
+    if (verificationStatus === "verified") {
       const eventDate = page.eventDate;
+      const eventTime = page.eventTime;
       const eventVenue = page.eventVenue;
+      const eventAddress = page.eventAddress;
+
       const eventDescription = page.eventDescription;
       attendees.declineReason = undefined;
       await sendEmail({
         from: "jhapalisamaj@gmail.com",
         to: attendees.email,
         subject: "Successfully Verified!",
-        html: attendeeAcceptEmail(
-          attendees.fullName,
-          attendeeId,
-          eventDate,
-          eventVenue,
-          eventDescription
-        ),
+        html: attendeeAcceptEmail(attendees.fullName, attendeeId),
       });
     } else {
       await sendEmail({
@@ -249,7 +251,7 @@ exports.verifyAttendee = async (req, res) => {
         html: attendeeDeclineEmail(
           attendees.fullName,
           declineReason ||
-          "Your registration did not meet the event criteria. Please review the requirements and try again"
+            "Your registration did not meet the event criteria. Please review the requirements and try again"
         ),
       });
     }
@@ -271,7 +273,18 @@ exports.verifyAttendee = async (req, res) => {
 exports.updateAttendee = async (req, res) => {
   try {
     const { attendeeId } = req.params;
-    const { fullName, email, country, contact, spouse } = req.body;
+    const {
+      fullName,
+      email,
+      country,
+      contact,
+      spouse,
+      membership,
+      otherAffiliation,
+      hasSpouseOrFamily,
+      familyCount,
+    } = req.body;
+    console.log(req.body, "this is req body data");
     let page = await AttendeePage.findOne();
     if (!page) {
       return res.status(404).json({ error: "Attendee page not found." });
@@ -280,11 +293,22 @@ exports.updateAttendee = async (req, res) => {
     if (!attendees) {
       return res.status(404).json({ error: "Attendee not found." });
     }
+
+    if (req.file) {
+      attendees.receipt = req.file.filename;
+    }
     if (fullName !== undefined) attendees.fullName = fullName;
     if (email !== undefined) attendees.email = email;
     if (country !== undefined) attendees.country = country;
     if (contact !== undefined) attendees.contact = contact;
     if (spouse !== undefined) attendees.spouse = spouse;
+    if (membership !== undefined) attendees.membership = membership;
+    if (otherAffiliation !== undefined)
+      attendees.otherAffiliation = otherAffiliation;
+    if (hasSpouseOrFamily !== undefined)
+      attendees.hasSpouseOrFamily = hasSpouseOrFamily;
+    if (familyCount !== undefined) attendees.familyCount = familyCount;
+
     await page.save();
     return res.status(200).json({
       message: "Attendee updated successfully.",

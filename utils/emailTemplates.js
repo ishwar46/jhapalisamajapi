@@ -437,13 +437,7 @@ const attendeeDeclineEmail = (fullName, declineReason) => {
   `;
 };
 
-const attendeeAcceptEmail = (
-  fullName,
-  attendeeId,
-  eventDate,
-  eventLocation,
-  eventDescription
-) => {
+const attendeeAcceptEmail = (fullName, attendeeId) => {
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -456,7 +450,7 @@ const attendeeAcceptEmail = (
       <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; border: 2px dashed #f97316;">
           <tr>
               <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
-                  🎟️ तपाईँको कार्यक्रम पास तयार छ!
+                  तपाईँको कार्यक्रम पास तयार छ!
               </td>
           </tr>
           <tr>
@@ -465,18 +459,21 @@ const attendeeAcceptEmail = (
                   <img
                       src="https://api.qrserver.com/v1/create-qr-code/?data=${attendeeId}&size=160x160"
                       alt="QR Code for Event Entry"
-                      style="border: 4px solid #f97316; border-radius: 8px;"
+                   
                   />
               </td>
           </tr>
           <tr>
               <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.6; text-align: center;">
-                  <p>Dear ${fullName},</p>
+                  <p>Dear <strong>${fullName}</strong>,</p>
                   <p>Your registration has been <strong>approved</strong>! Below is your event pass.</p>
 
-                  <p style="margin-top: 20px;"><strong>📅 Date:</strong> ${eventDate}</p>
-                  <p><strong>📍 Location:</strong> ${eventLocation}</p>
-                  <p><strong>📖 Description:</strong><br>${eventDescription}</p>
+                    <div style="background-color: #fdf4e7; border: 1px solid #fcd9b6; padding: 18px; border-radius: 10px; margin-bottom: 20px;">
+                    <p style="margin: 0;"><strong>🗓 Date:</strong> April 12, 2025</p>
+                    <p style="margin: 0;"><strong>🕘 Time:</strong> 10:00 AM – 5:00 PM</p>
+                    <p style="margin: 0;"><strong>📍 Venue:</strong> DoubleTree by Hilton McLean Tyson</p>
+                    <p style="margin: 0;"><strong>📫 Address:</strong> 1960 Chain Bridge Rd, McLean VA, USA</p>
+                  </div>
 
                   <p>We can’t wait to see you there and celebrate with the Jhapali community!</p>
               </td>
@@ -491,7 +488,6 @@ const attendeeAcceptEmail = (
   </html>
   `;
 };
-
 
 module.exports = {
   welcomeEmail,

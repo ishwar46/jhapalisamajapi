@@ -37,17 +37,12 @@ const attendeeSchema = new mongoose.Schema({
   },
   membership: {
     type: String,
-    enum: [
-      "Jhapali Samaj USA",
-      "International Jhapali Samaj",
-      "Other"
-    ],
+    enum: ["Jhapali Samaj USA", "International Jhapali Samaj", "Other"],
   },
   otherAffiliation: {
     type: String,
     default: "",
   },
-
 });
 
 const attendeePageSchema = new mongoose.Schema(
@@ -55,7 +50,8 @@ const attendeePageSchema = new mongoose.Schema(
     pageTitle: { type: String, default: "Register For The Event" },
     pageSubtitle: { type: String, default: "" },
     eventStatus: { type: Boolean, default: true },
-    eventDate: { type: Date, default: "" },
+    eventDate: { type: Date, default: () => new Date().setHours(0, 0, 0, 0) },
+    eventTime: { type: Date, default: () => new Date().setHours(0, 0, 0, 0) },
     eventAddress: { type: String, default: "" },
     eventVenue: { type: String, default: "" },
     eventDescription: { type: String, default: "" },
