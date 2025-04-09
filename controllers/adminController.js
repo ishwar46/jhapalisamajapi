@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const AttendeePage = require("../models/AttendeePage");
 const DeletedUser = require("../models/deletedUser.model");
 const getNextReceiptNumber = require("../utils/getNextReceiptNumber");
 
@@ -156,6 +157,48 @@ exports.verifyAdmin = async (req, res) => {
     });
   }
 };
+exports.markAttendance = async (req, res) => {
+  try {
+    const { attendeeId } = req.params;
+    let page = await AttendeePage.findOne();
+    if (!page) {
+      return res.status(404).json({ error: "Attendee page not found." });
+    }
+
+    const attendee = page.attendees.id(attendeeId);
+    if (!attendee) {
+      return res.status(404).json({ error: "Attendee not found." });
+    }
+
+    const todayStr = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
+
+    const alreadyMarked = attendee.attendance.some((attendance) => {
+      const attendanceDate = new Date(
+        attendance.date || attendance.date?.$date
+      );
+      const attendanceStr = attendanceDate.toISOString().split("T")[0];
+      return attendanceStr === todayStr;
+    });
+
+    if (alreadyMarked) {
+      return res
+        .status(400)
+        .json({ error: "Attendance already marked for today." });
+    }
+
+    attendee.attendance.push({ date: new Date(), status: true });
+    await page.save(); // Save the page, not attendee (embedded doc)
+
+    res.status(200).json({
+      success: true,
+      attendee,
+      message: "Attendance marked successfully.",
+    });
+  } catch (error) {
+    console.error("Error in marking attendance:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
 
 exports.updateUser = async (req, res) => {
   try {
@@ -249,6 +292,43 @@ exports.updateUser = async (req, res) => {
         hasSpouse: spouse ? true : false,
         spouse: spouse ? spouse : null,
         familyMembers: user.familyMembers, // Updated familyMembers
+      },
+    });
+  } catch (error) {
+    console.error("Admin Update User Error:", error);
+    return res.status(500).json({
+      error: `Server error while updating user details: ${error.message}`,
+    });
+  }
+};
+exports.changeRole = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { isVolunteer } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: "No user ID specified." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    if (user.role === "admin" || user.role === "superadmin") {
+      return res.status(400).json({ error: "Admins cannot become volunteers" });
+    }
+    if (isVolunteer) {
+      user.role = "volunteer";
+    } else {
+      user.role = "user";
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "User updated successfully by admin.",
+      user: {
+        user,
       },
     });
   } catch (error) {

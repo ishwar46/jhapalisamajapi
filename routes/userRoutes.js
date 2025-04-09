@@ -7,6 +7,7 @@ const userController = require("../controllers/userController");
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
 const superAdminMiddleware = require("../middleware/superAdminMiddleware");
+const volunteerMiddleware = require("../middleware/volunteerMiddleware");
 
 // Public routes
 router.post("/register", userController.register);
@@ -34,7 +35,7 @@ router.post(
 );
 
 // Admin-only route
-router.get("/all-users", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/all-users", authMiddleware,   volunteerMiddleware, async (req, res) => {
   try {
     const User = require("../models/User");
 

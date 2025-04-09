@@ -7,6 +7,7 @@ const adminController = require("../controllers/adminController");
 const authMiddleware = require("../middleware/authMiddleware");
 const superAdminMiddleware = require("../middleware/superAdminMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
+const volunteerMiddleware = require("../middleware/volunteerMiddleware");
 
 router.post(
   "/promote",
@@ -43,5 +44,17 @@ router.get(
   authMiddleware,
   adminMiddleware,
   adminController.verifyAdmin
+);
+router.patch(
+  "/role-change/:userId",
+  authMiddleware,
+  adminMiddleware,
+  adminController.changeRole
+);
+router.patch(
+  "/attendee-verify/:attendeeId",
+  authMiddleware,
+  volunteerMiddleware,
+  adminController.markAttendance
 );
 module.exports = router;

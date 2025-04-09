@@ -143,6 +143,7 @@ exports.attendeeRegistration = async (req, res) => {
       contact,
       spouse,
       membership,
+      designation,
       otherAffiliation,
       hasSpouseOrFamily,
       familyCount,
@@ -176,6 +177,7 @@ exports.attendeeRegistration = async (req, res) => {
       fullName,
       email,
       country,
+      designation,
       contact,
       receipt,
       membership,
@@ -277,6 +279,7 @@ exports.updateAttendee = async (req, res) => {
       fullName,
       email,
       country,
+      designation,
       contact,
       spouse,
       membership,
@@ -300,6 +303,7 @@ exports.updateAttendee = async (req, res) => {
     if (fullName !== undefined) attendees.fullName = fullName;
     if (email !== undefined) attendees.email = email;
     if (country !== undefined) attendees.country = country;
+    if (designation !== undefined) attendees.designation = designation;
     if (contact !== undefined) attendees.contact = contact;
     if (spouse !== undefined) attendees.spouse = spouse;
     if (membership !== undefined) attendees.membership = membership;
