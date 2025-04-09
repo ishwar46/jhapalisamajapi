@@ -15,7 +15,15 @@ const attendeeSchema = new mongoose.Schema({
     lowercase: true,
     trim: true,
   },
+
   country: { type: String, trim: true },
+  attendance: [
+    {
+      date: { type: Date, default: Date.now },
+      status: { type: Boolean },
+    },
+  ],
+  designation: { type: String, trim: true },
   contact: { type: String, required: true, trim: true },
   verificationStatus: {
     type: String,
