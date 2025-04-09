@@ -3,6 +3,7 @@ const router = express.Router();
 const attendeeController = require("../controllers/attendeeController");
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
+const volunteerMiddleware = require("../middleware/volunteerMiddleware");
 
 // Public endpoint to get
 router.get("/", attendeeController.getAttendeePage);
@@ -11,7 +12,7 @@ router.get("/", attendeeController.getAttendeePage);
 router.get(
   "/attendees",
   authMiddleware,
-  adminMiddleware,
+  volunteerMiddleware,
   attendeeController.getAllAttendees
 );
 // Admin-only: get all attendees
