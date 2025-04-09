@@ -438,48 +438,83 @@ const attendeeDeclineEmail = (fullName, declineReason) => {
 };
 
 const attendeeAcceptEmail = (fullName, attendeeId) => {
+  // Google Calendar event link (example format)
+  const calendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text=Jhapali+Samaj+USA+Event&dates=20250412T140000Z/20250412T210000Z&details=Join+us+for+the+4th+Regional+Jhapali+Gathering&location=DoubleTree+by+Hilton+McLean+Tyson,+1960+Chain+Bridge+Rd,+McLean+VA,+USA";
+
+  // Google Maps location link
+  const mapsUrl = "https://www.google.com/maps?q=1960+Chain+Bridge+Rd,+McLean+VA,+USA";
+
   return `
   <!DOCTYPE html>
   <html lang="en">
   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Your Event Pass</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   </head>
-  <body style="font-family: Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; border: 2px dashed #f97316;">
+  <body style="font-family: 'Inter', sans-serif; background-color: #f0f4f8; margin: 0; padding: 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 30px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 2px dashed #f97316;">
+          
+          <!-- Header -->
           <tr>
-              <td style="background-color: #f97316; padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
+              <td style="background-color: #f97316; padding: 24px; text-align: center; color: #ffffff; font-size: 22px; font-weight: 700;">
                   तपाईँको कार्यक्रम पास तयार छ!
               </td>
           </tr>
+
+          <!-- QR Section -->
           <tr>
-              <td style="text-align: center; padding: 25px;">
-                  <p style="font-size: 18px; color: #333333; font-weight: 600; margin-bottom: 10px;">Scan this QR at the entrance</p>
+              <td style="text-align: center; padding: 10px 20px;">
+                  <p style="font-size: 16px; color: #333; font-weight: 600; margin-bottom: 8px;">
+                    Present this QR code at the event entrance:
+                  </p>
                   <img
                       src="https://api.qrserver.com/v1/create-qr-code/?data=${attendeeId}&size=160x160"
-                      alt="QR Code for Event Entry"
-                   
+                      alt="QR Code"
+                      style="margin-top: 10px; border: 3px solid #f97316; border-radius: 8px;"
                   />
+                  <p style="font-size: 13px; color: #888; margin-top: 10px;">
+                    Your unique pass — please keep it confidential.
+                  </p>
               </td>
           </tr>
-          <tr>
-              <td style="padding: 20px; color: #333333; font-size: 16px; line-height: 1.6; text-align: center;">
-                  <p>Dear <strong>${fullName}</strong>,</p>
-                  <p>Your registration has been <strong>approved</strong>! Below is your event pass.</p>
 
-                    <div style="background-color: #fdf4e7; border: 1px solid #fcd9b6; padding: 18px; border-radius: 10px; margin-bottom: 20px;">
-                    <p style="margin: 0;"><strong>🗓 Date:</strong> April 12, 2025</p>
-                    <p style="margin: 0;"><strong>🕘 Time:</strong> 10:00 AM – 5:00 PM</p>
-                    <p style="margin: 0;"><strong>📍 Venue:</strong> DoubleTree by Hilton McLean Tyson</p>
-                    <p style="margin: 0;"><strong>📫 Address:</strong> 1960 Chain Bridge Rd, McLean VA, USA</p>
+          <!-- Main Body -->
+          <tr>
+              <td style="padding: 24px 20px; color: #333333; font-size: 16px; line-height: 1.6; text-align: center;">
+                  <p>Dear <strong>${fullName}</strong>,</p>
+                  <p>Your registration has been <strong>approved</strong> for the 4th Regional Gathering of Antarashtriya Jhapali Samaj hosted by Jhapali Samaj USA.</p>
+
+                  <!-- Event Info -->
+                  <div style="background-color: #fef3e7; border: 1px solid #fcd9b6; padding: 16px; border-radius: 10px; margin: 20px 0;">
+                    <p style="margin: 4px 0;"><strong>🗓 Date:</strong> April 12, 2025</p>
+                    <p style="margin: 4px 0;"><strong>🕘 Time:</strong> 10:00 AM – 5:00 PM</p>
+                    <p style="margin: 4px 0;"><strong>📍 Venue:</strong> DoubleTree by Hilton McLean Tyson</p>
+                    <p style="margin: 4px 0;"><strong>📫 Address:</strong> 1960 Chain Bridge Rd, McLean VA, USA</p>
                   </div>
 
-                  <p>We can’t wait to see you there and celebrate with the Jhapali community!</p>
+                  <p>We can't wait to welcome you and celebrate with the global Jhapali community!</p>
+
+                  <!-- Buttons -->
+                  <div style="margin-top: 20px;">
+                      <a href="${calendarUrl}" target="_blank" style="text-decoration: none; margin-right: 10px;">
+                          <button style="background-color: #10b981; color: white; padding: 10px 18px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                              📅 Add to Calendar
+                          </button>
+                      </a>
+                      <a href="${mapsUrl}" target="_blank" style="text-decoration: none;">
+                          <button style="background-color: #3b82f6; color: white; padding: 10px 18px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                              📍 Get Directions
+                          </button>
+                      </a>
+                  </div>
               </td>
           </tr>
+
+          <!-- Footer -->
           <tr>
-              <td style="background-color: #f97316; padding: 15px; text-align: center; color: #ffffff; font-size: 14px;">
+              <td style="background-color: #f97316; padding: 16px; text-align: center; color: #ffffff; font-size: 13px;">
                   &copy; 2025 Jhapali Samaj USA. All rights reserved.
               </td>
           </tr>
@@ -488,6 +523,8 @@ const attendeeAcceptEmail = (fullName, attendeeId) => {
   </html>
   `;
 };
+
+
 
 module.exports = {
   welcomeEmail,
