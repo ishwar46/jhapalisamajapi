@@ -53,5 +53,11 @@ router.delete(
   adminMiddleware,
   attendeeController.deleteAttendee
 );
+// Get an existing attendee
+router.get(
+  "/attendees/:attendeeId",
+  authMiddleware,
+  attendeeController.getAttendeeById
+);
 
 module.exports = router;

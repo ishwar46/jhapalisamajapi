@@ -64,6 +64,36 @@ exports.getAllAttendees = async (req, res) => {
       page = new AttendeePage();
       await page.save();
     }
+
+    const emailMap = new Map();
+    const contactMap = new Map();
+    const fullNameMap = new Map();
+
+    // First pass: build maps with counts or indexes
+    page.attendees.forEach((attendee, index) => {
+      const email = attendee.email?.toLowerCase();
+      const contact = attendee.contact;
+      const fullName = attendee.fullName?.toLowerCase();
+
+      emailMap.set(email, (emailMap.get(email) || 0) + 1);
+      contactMap.set(contact, (contactMap.get(contact) || 0) + 1);
+      fullNameMap.set(fullName, (fullNameMap.get(fullName) || 0) + 1);
+    });
+
+    // Second pass: mark duplicates (count > 1)
+    page.attendees.forEach((attendee) => {
+      const email = attendee.email?.toLowerCase();
+      const contact = attendee.contact;
+      const fullName = attendee.fullName?.toLowerCase();
+
+      attendee.duplicate =
+        emailMap.get(email) > 1 ||
+        contactMap.get(contact) > 1 ||
+        fullNameMap.get(fullName) > 1;
+    });
+
+    await page.save();
+
     return res.status(200).json(page);
   } catch (error) {
     console.error("getAttendeePage Error:", error);
@@ -163,6 +193,7 @@ exports.attendeeRegistration = async (req, res) => {
     }
 
     let page = await AttendeePage.findOne();
+
     if (!page) {
       page = new AttendeePage();
       await page.save();
@@ -344,6 +375,31 @@ exports.deleteAttendee = async (req, res) => {
     return res.status(200).json({
       message: "Attendee deleted successfully.",
       page,
+    });
+  } catch (error) {
+    console.error("deleteAttendee Error:", error);
+    return res.status(500).json({ error: "Server error deleting attendee." });
+  }
+};
+/**
+ * GET /api/attendee-page/attendees/:attendeeId
+ * Get specific attendee.
+ */
+exports.getAttendeeById = async (req, res) => {
+  try {
+    const { attendeeId } = req.params;
+    let page = await AttendeePage.findOne();
+    if (!page) {
+      return res.status(404).json({ error: "Attendee page not found." });
+    }
+    const attendees = page.attendees.id(attendeeId);
+    if (!attendees) {
+      return res.status(404).json({ error: "Attendee not found." });
+    }
+    await page.save();
+    return res.status(200).json({
+      message: "Attendee found successfully.",
+      attendees,
     });
   } catch (error) {
     console.error("deleteAttendee Error:", error);
