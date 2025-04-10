@@ -38,7 +38,7 @@ const attendeeSchema = new mongoose.Schema({
   spouse: { type: spouseSchema, default: null },
   hasSpouseOrFamily: { type: Boolean, default: false },
   familyCount: { type: Number, default: 0, max: 2 },
-
+  duplicate: { type: Boolean, default: false },
   receipt: {
     type: String,
     default: "",

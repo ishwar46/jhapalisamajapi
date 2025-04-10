@@ -439,10 +439,12 @@ const attendeeDeclineEmail = (fullName, declineReason) => {
 
 const attendeeAcceptEmail = (fullName, attendeeId) => {
   // Google Calendar event link (example format)
-  const calendarUrl = "https://www.google.com/calendar/render?action=TEMPLATE&text=Jhapali+Samaj+USA+Event&dates=20250412T140000Z/20250412T210000Z&details=Join+us+for+the+4th+Regional+Jhapali+Gathering&location=DoubleTree+by+Hilton+McLean+Tyson,+1960+Chain+Bridge+Rd,+McLean+VA,+USA";
+  const calendarUrl =
+    "https://www.google.com/calendar/render?action=TEMPLATE&text=Jhapali+Samaj+USA+Event&dates=20250412T140000Z/20250412T210000Z&details=Join+us+for+the+4th+Regional+Jhapali+Gathering&location=DoubleTree+by+Hilton+McLean+Tyson,+1960+Chain+Bridge+Rd,+McLean+VA,+USA";
 
   // Google Maps location link
-  const mapsUrl = "https://www.google.com/maps?q=1960+Chain+Bridge+Rd,+McLean+VA,+USA";
+  const mapsUrl =
+    "https://www.google.com/maps?q=1960+Chain+Bridge+Rd,+McLean+VA,+USA";
 
   return `
   <!DOCTYPE html>
@@ -523,8 +525,6 @@ const attendeeAcceptEmail = (fullName, attendeeId) => {
   </html>
   `;
 };
-
-
 
 module.exports = {
   welcomeEmail,
